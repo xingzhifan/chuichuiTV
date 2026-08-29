@@ -6,7 +6,14 @@
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** ready-for-agent (build done; runtime pending device)
 
-- [ ] `gradlew :app:assembleDebug` BUILD SUCCESSFUL，产出 `app-mobile-debug.apk`。
+- [x] `gradlew :app:assembleDebug` BUILD SUCCESSFUL，产出 `app-mobile-debug.apk`。
 - [ ] 安装后打开显示分类列表；源不可用时显示为空/占位且不崩溃。
+
+## Progress
+
+- 修复 AGP9 内置 Kotlin 冲突：移除 `org.jetbrains.kotlin.android` 插件（AGP9 自带 Kotlin），保留 `org.jetbrains.kotlin.plugin.compose`，`jvmTarget` 用新 `compilerOptions` DSL。
+- `:app:assembleDebug` SUCCESSFUL，`app-mobile-debug.apk` + `app-leanback-debug.apk`（各 13.27MB）；
+- 单测 `:app:testMobileDebugUnitTest` green；已 git commit。
+- 待办：运行时项（装 APK 显示分类列表）需真机/模拟器验证。
