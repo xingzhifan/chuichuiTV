@@ -1,0 +1,22 @@
+# Build artifacts
+build/
+.gradle/
+*.apk
+
+# Local config
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Vendored / abandoned fork clone (kept on disk as reference, not part of this project)
+chuichui/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Machine-specific SDK setup scripts
+setup-android-sdk.ps1
+assemble-android-sdk.ps1
