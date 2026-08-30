@@ -6,9 +6,19 @@
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] 源管理页提供"批量导入"入口（粘贴 JSON 或填订阅 URL 二选一）。
-- [ ] 导入格式：`[{"name":"…","api":"…","type":"maccms|js"}]`；按 api 去重，可选覆盖现有列表。
-- [ ] 导入后源列表刷新并持久化；URL 方式支持下载解析（复用共享 Http）。
-- [ ] CONTEXT.md「订阅配置 (Subscription)」词条由该功能兑现（订阅=声明一组源的实体）。
+- [x] 源管理页提供"批量导入"入口（粘贴 JSON 或填订阅 URL 二选一）。
+- [x] 导入格式：`[{"name":"…","api":"…","type":"maccms|js"}]`；按 api 去重，可选覆盖/追加。
+- [x] 导入后源列表刷新并持久化；URL 方式支持下载解析（复用共享 Http via SubscriptionFetcher）。
+- [x] CONTEXT.md「订阅配置 (Subscription)」词条由该功能兑现（订阅=声明一组源的实体）。
+
+## Progress
+
+- `SubscriptionImporter`（纯逻辑，无 Android 依赖，可 JVM 测试）：解析 JSON 数组 → 按 `api` 去重；`overwrite=false` 追加（保留现有 + 跳过 api 重复）、`overwrite=true` 覆盖（以本批为最终列表）；统计 imported/skippedDupes/invalid。
+- `SubscriptionFetcher`：订阅 URL → 下载文本（复用共享 `Http`），网络/解析层分离。
+- `SourcesScreen`：右上「批量导入」入口 → `BatchImportDialog`（粘贴 JSON / 订阅 URL 切换、追加/覆盖切换、导入结果 report）；成功即持久化并刷新（覆盖时选中回退到首个由现有 persist 处理）。
+- `SubscriptionImporterTest`：4 用例覆盖 JSON 解析 / 追加去重 / 覆盖替换 / 无效 JSON；JVM 全绿。
+- CONTEXT.md 词条更新。
+
+**验证：** `assembleMobileDebug` + `assembleLeanbackDebug` + `testMobileDebugUnitTest`/`testLeanbackDebugUnitTest` BUILD SUCCESSFUL（SubscriptionImporterTest 4/4 通过）。
