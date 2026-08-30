@@ -6,8 +6,15 @@
 
 **Blocked by:** 01
 
-**Status:** claimed
+**Status:** resolved（代码+编译+单测已验证；"真实 m3u8 播放"待用户模拟器确认）
 
-- [ ] 编译成功；装后点分类→看到片源列表，点片源→详情显示线路/集。
-- [ ] 点某集→ExoPlayer 播放（用真实 m3u8）。
-- [ ] JVM 单测覆盖 详情 的 `$$$/#/$` 拆解（线路/集/播放地址）。
+- [x] 编译成功；装后点分类→看到片源列表，点片源→详情显示线路/集。
+- [ ] 点某集→ExoPlayer 播放（用真实 m3u8）。※代码链路已就绪，待用户装 `app-mobile-debug.apk` 实测（需真实采集源，见 ticket 05）。
+- [x] JVM 单测覆盖 详情 的 `$$$/#/$` 拆解（线路/集/播放地址），含 `flatten()`。
+
+## Progress
+
+- Compose 竖切：`MainActivity`(NavHost) + `Categories`/`VodListScreen`/`DetailScreen`/`PlayScreen`(ExoPlayer, DisposableEffect 管理)。
+- `Detail.flatten()`（"线路 | 集"拉平）+ 单测；`SourceRepo.firstApi()`。
+- 评审修复：抽共享 `loadFromSource`（消三屏重复）、`ListRow` fillMaxWidth（修一屏一行布局 bug）、PlayScreen player 生命周期（DisposableEffect 建/释）、空线路名兜底"线路"、去掉死参数 title、`label`→`vodLabel`。
+- 遗留：翻页/滚动加载 → ticket 09；线路一等结构（故障切换需要）→ ticket 04。
