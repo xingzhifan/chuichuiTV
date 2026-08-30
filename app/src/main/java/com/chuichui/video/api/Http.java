@@ -22,9 +22,10 @@ public final class Http {
         return CLIENT;
     }
 
-    /** GET 一个 URL，返回响应体文本（body 为空时返回空串）。 */
+    /** GET 一个 URL；非 2xx 抛 IOException（让空态兜底、错误可见），成功返回响应体文本。 */
     public static String text(String url) throws IOException {
         try (Response res = CLIENT.newCall(new Request.Builder().url(url).build()).execute()) {
+            if (!res.isSuccessful()) throw new IOException("HTTP " + res.code() + " for " + url);
             return res.body() == null ? "" : res.body().string();
         }
     }

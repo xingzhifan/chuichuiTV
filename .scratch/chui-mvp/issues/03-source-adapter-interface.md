@@ -6,13 +6,21 @@
 
 **Blocked by:** 01
 
-**Status:** claimed
+**Status:** resolved（代码+编译+单测已验证）
 
-- [ ] `SourceAdapter` 接口 + `MaccmsAdapter`/`JsSpiderAdapter` + `SourceFactory` 齐备。
-- [ ] JVM 单测：两适配器返回统一领域模型，`$$$/#/$` 拆解正确。
+- [x] `SourceAdapter` 接口 + `MaccmsAdapter`/`JsSpiderAdapter` + `SourceFactory` 齐备。
+- [x] JVM 单测：两适配器返回统一领域模型，`$$$/#/$` 拆解正确（`MaccmsJsonTest` + `SourceAdapterTest`，含 search action）。
 
 **评审遗留（/code-review 判断题，本 ticket 重构时一并处理）：**
-- 抽出共享的 SharedPreferences+Gson 存取（`History.Store` / `SourceRepo` 形状重复）。
-- 共享单个 `OkHttpClient`（`Maccms` / `JsSpider` 各自 new）。
-- 删除 `JsSpider.JS_SOURCE` 死静态字段（Speculative Generality）。
+- 抽出共享的 SharedPreferences+Gson 存取（`History.Store` / `SourceRepo` 形状重复）→ 已做（`data/JsonPref`）。
+- 共享单个 `OkHttpClient`（`Maccms` / `JsSpider` 各自 new）→ 已做（`api/Http`）。
+- 删除 `JsSpider.JS_SOURCE` 死静态字段（Speculative Generality）→ 已做（类重写为 `JsSpiderAdapter`）。
 - `Bean` 全 String 字段（Primitive Obsession）——MVP 可接受，仅在顺手处收敛。
+
+**/code-review 修复：**
+- `Source.api` 双语义落地：JS_SPIDER 的 api 可为脚本内容或 http(s) 地址（`JsSpiderAdapter` 惰性拉取并缓存），消除"存 URL 静默失败"。
+- `MaccmsAdapter` 的 `typeId/vodId` 补 URL 编码（此前只编码 `wd`）。
+- `Http.text` 非 2xx 抛 IOException（空态兜底、错误可见）。
+- 名不符实测试改名 `jsSpiderHomeFieldsFollowMaccmsConvention` + 补 `search` action 测试。
+
+**测试策略说明：** `MaccmsAdapter` 方法直连网络，不直接 JVM 测试；其协议层极薄（拼 query + GET），解析逻辑全部在共享的 `MaccmsJson`（已测）。JS 侧以注入脚本方式覆盖全部 action（home/category/search/detail）。

@@ -21,10 +21,24 @@ import java.util.List;
  */
 public class JsSpiderAdapter implements SourceAdapter {
 
-    private final String jsSource;
+    /** api 字段：脚本源码，或指向脚本的 http(s) 地址（惰性拉取并缓存）。 */
+    private final String api;
+    private String resolvedJs;
 
-    public JsSpiderAdapter(String jsSource) {
-        this.jsSource = jsSource;
+    public JsSpiderAdapter(String api) {
+        this.api = api;
+    }
+
+    /** 解析出 JS 脚本源码：api 是 http(s) 地址则拉取，否则视为脚本内容本身。 */
+    private String js() throws IOException {
+        if (resolvedJs != null) return resolvedJs;
+        String src = api == null ? "" : api;
+        if (src.startsWith("http://") || src.startsWith("https://")) {
+            src = Http.text(src);
+            if (src.isEmpty()) throw new IOException("无法拉取 JS 蜘蛛脚本: " + api);
+        }
+        resolvedJs = src;
+        return src;
     }
 
     @Override
@@ -48,7 +62,7 @@ public class JsSpiderAdapter implements SourceAdapter {
     }
 
     /** 执行 JS 的 spider(json)：构造入参 JSON、评估脚本、调用并取回结果字符串。 */
-    private String call(String action, String paramKey, String paramValue, Integer pg) {
+    private String call(String action, String paramKey, String paramValue, Integer pg) throws IOException {
         JsonObject input = new JsonObject();
         input.addProperty("action", action);
         if (paramKey != null) input.addProperty(paramKey, paramValue);
@@ -68,7 +82,7 @@ public class JsSpiderAdapter implements SourceAdapter {
                     }
                 }
             });
-            cx.evaluateString(scope, jsSource, "spider.js", 1, null);
+            cx.evaluateString(scope, js(), "spider.js", 1, null);
             Object fn = ScriptableObject.getProperty(scope, "spider");
             if (fn instanceof Function) {
                 return Context.toString(((Function) fn).call(cx, scope, scope, new Object[]{input.toString()}));

@@ -28,6 +28,8 @@ public class SourceAdapterTest {
             + "    return JSON.stringify({class:[{type_id:'1',type_name:'电影'}]});"
             + "  if (i.action === 'category')"
             + "    return JSON.stringify({list:[{vod_id:'v1',vod_name:'JS片',vod_play_from:'线A',vod_play_url:'第01集$https://j/1.m3u8'}]});"
+            + "  if (i.action === 'search')"
+            + "    return JSON.stringify({list:[{vod_id:'s1',vod_name:'搜索到:'+i.wd}]});"
             + "  if (i.action === 'detail')"
             + "    return JSON.stringify({list:[{vod_id:'v1',vod_name:'JS片',vod_play_from:'线A$$$线B',vod_play_url:'第01集$https://j/1.m3u8#第02集$https://j/2.m3u8$$$第01集$https://k/1.m3u8'}]});"
             + "  return '{}';"
@@ -64,7 +66,14 @@ public class SourceAdapterTest {
     }
 
     @Test
-    public void maccmsAndJsAdaptersShareSameDomainShape() throws IOException {
+    public void jsSpiderSearchPassesKeywordThrough() throws IOException {
+        List<Vod> out = new JsSpiderAdapter(JS).search("星际", 1);
+        assertEquals(1, out.size());
+        assertEquals("搜索到:星际", out.get(0).vodName);
+    }
+
+    @Test
+    public void jsSpiderHomeFieldsFollowMaccmsConvention() throws IOException {
         // 两个适配器对同一形状数据的 home() 输出结构一致（分类字段）。
         SourceAdapter js = new JsSpiderAdapter(JS);
         List<Category> jsCategories = js.home();

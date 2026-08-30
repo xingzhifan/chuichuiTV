@@ -8,7 +8,7 @@ public class Source {
     public enum Type {
         /** 苹果 CMS 采集 API。 */
         @SerializedName("maccms") MACCMS,
-        /** JS 蜘蛛脚本（api 字段存脚本地址或脚本内容）。 */
+        /** JS 蜘蛛脚本：api 字段存脚本内容，或指向脚本的 http(s) 地址（适配器会拉取）。 */
         @SerializedName("js") JS_SPIDER
     }
 

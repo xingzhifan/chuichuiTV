@@ -26,7 +26,7 @@ public class MaccmsAdapter implements SourceAdapter {
 
     @Override
     public List<Vod> category(String typeId, int pg) throws IOException {
-        return MaccmsJson.vods(get("ac=videolist&t=" + typeId + "&pg=" + pg));
+        return MaccmsJson.vods(get("ac=videolist&t=" + enc(typeId) + "&pg=" + pg));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class MaccmsAdapter implements SourceAdapter {
 
     @Override
     public Detail detail(String vodId) throws IOException {
-        return MaccmsJson.detail(get("ac=detail&ids=" + vodId));
+        return MaccmsJson.detail(get("ac=detail&ids=" + enc(vodId)));
     }
 
     private JsonObject get(String query) throws IOException {
