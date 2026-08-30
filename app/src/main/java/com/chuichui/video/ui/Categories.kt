@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +23,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -118,6 +122,8 @@ internal fun ScreenScaffold(
     emptyText: String,
     actions: (@Composable () -> Unit)? = null,
     header: (@Composable () -> Unit)? = null,
+    listState: LazyListState = rememberLazyListState(),
+    bottom: (@Composable () -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
     Column(Modifier.fillMaxSize()) {
@@ -138,7 +144,13 @@ internal fun ScreenScaffold(
             empty -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(emptyText, color = Color.Gray, textAlign = TextAlign.Center)
             }
-            else -> LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), content = content)
+            else -> LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            ) {
+                content()
+                if (bottom != null) item { bottom() }
+            }
         }
     }
 }
@@ -169,4 +181,38 @@ internal fun ListRow(text: String, onClick: () -> Unit) {
             .padding(vertical = 14.dp, horizontal = 8.dp)
             .clickable { onClick() }
     )
+}
+
+/** 列表底部「加载更多」提示。 */
+@Composable
+internal fun LoadMoreRow() {
+    Box(
+        Modifier.fillMaxWidth().padding(vertical = 14.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("加载中…", color = Color.Gray)
+    }
+}
+
+/**
+ * 滚动到底部附近时触发翻页。用最后可见项 index 接近列表长度判断"到底"，
+ * 并在 shouldLoad() 为真时才调用 onLoadMore()（调用方自行保证防重入）。
+ */
+@Composable
+internal fun AutoLoadMore(
+    listState: LazyListState,
+    shouldLoad: () -> Boolean,
+    onLoadMore: suspend () -> Unit,
+) {
+    val onLoadMoreState by rememberUpdatedState(onLoadMore)
+    val shouldLoadState by rememberUpdatedState(shouldLoad)
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val info = listState.layoutInfo
+            val last = info.visibleItemsInfo.lastOrNull()?.index ?: -1
+            last to info.totalItemsCount
+        }.collect { (last, total) ->
+            if (total > 0 && last >= total - 3 && shouldLoadState()) onLoadMoreState()
+        }
+    }
 }

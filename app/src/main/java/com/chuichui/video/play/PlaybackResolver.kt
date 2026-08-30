@@ -58,7 +58,7 @@ object PlaybackResolver {
                 async {
                     val adapter = SourceFactory.create(src)
                     try {
-                        val vods = adapter.search(request.vodName, 1)
+                        val vods = adapter.search(request.vodName, 1).vods
                         val match = vods.firstOrNull { it.vodName == request.vodName }
                             ?: return@async emptyList<PlayCandidate>()
                         toCandidates(adapter.detail(match.vodId).lines, src.id, src.name)

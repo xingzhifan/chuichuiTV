@@ -6,7 +6,7 @@
 
 **Blocked by:** 02
 
-**Status:** claimed
+**Status:** resolved (build verified; on-device D-pad check pending by user on Xiaomi TV)
 
-- [ ] `app-leanback-debug.apk` 编译成功。
-- [ ] 装到电视后遥控器 D-pad 可浏览分类并播放。
+- [x] `app-leanback-debug.apk` 编译成功（BUILD SUCCESSFUL, 14.05 MB, commit 8d029dd）。
+- [ ] 装到电视后遥控器 D-pad 可浏览分类并播放。（用户上小米电视验证）

@@ -64,6 +64,27 @@ VODS = [
     },
 ]
 
+# 生成每个分类的填充片源（多页），用于验证滚动加载/分页。每部都能正常播（360P）。
+def _fill(tid, tname, prefix, n):
+    out = []
+    for i in range(1, n + 1):
+        out.append({
+            "vod_id": f"{tid}{i:04d}",
+            "vod_name": f"{prefix}{i:03d}",
+            "vod_pic": "",
+            "vod_remarks": "分页测试",
+            "type_id": str(tid),
+            "type_name": tname,
+            "vod_year": "2024",
+            "vod_play_from": "流畅360P",
+            "vod_play_url": "正片$" + MP4_360,
+        })
+    return out
+
+
+VODS += _fill(1, "电影", "电影", 28)   # 分类1：1 部演示片 + 28 部填充 = 29 条 → 2 页（默认每页20）
+VODS += _fill(2, "剧集", "剧集", 28)   # 分类2：同上
+
 
 def find_vods(tid=None, wd=None, pg=1):
     out = VODS
@@ -71,7 +92,12 @@ def find_vods(tid=None, wd=None, pg=1):
         out = [v for v in out if v.get("type_id") == str(tid)]
     if wd:
         out = [v for v in out if wd in v.get("vod_name", "")]
-    return {"list": out, "pagecount": 1, "total": len(out)}
+    total = len(out)
+    pagecount = max(1, (total + 19) // 20)   # 模拟 maccms 默认每页 20 条
+    pg = max(1, pg)
+    start = (pg - 1) * 20
+    page = out[start:start + 20]
+    return {"list": page, "pagecount": pagecount, "total": total}
 
 
 def find_detail(ids):

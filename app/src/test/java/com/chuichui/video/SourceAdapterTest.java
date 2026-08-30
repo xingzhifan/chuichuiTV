@@ -7,7 +7,7 @@ import com.chuichui.video.api.SourceFactory;
 import com.chuichui.video.bean.Category;
 import com.chuichui.video.bean.Detail;
 import com.chuichui.video.bean.Source;
-import com.chuichui.video.bean.Vod;
+import com.chuichui.video.bean.VodPage;
 
 import org.junit.Test;
 
@@ -43,10 +43,10 @@ public class SourceAdapterTest {
         assertEquals(1, categories.size());
         assertEquals("电影", categories.get(0).typeName);
 
-        List<Vod> vods = spider.category("1", 1);
-        assertEquals(1, vods.size());
-        assertEquals("JS片", vods.get(0).vodName);
-        assertEquals("线A", vods.get(0).vodPlayFrom);
+        VodPage cat = spider.category("1", 1);
+        assertEquals(1, cat.vods.size());
+        assertEquals("JS片", cat.vods.get(0).vodName);
+        assertEquals("线A", cat.vods.get(0).vodPlayFrom);
 
         Detail d = spider.detail("v1");
         assertEquals(2, d.lines.size());
@@ -67,9 +67,9 @@ public class SourceAdapterTest {
 
     @Test
     public void jsSpiderSearchPassesKeywordThrough() throws IOException {
-        List<Vod> out = new JsSpiderAdapter(JS).search("星际", 1);
-        assertEquals(1, out.size());
-        assertEquals("搜索到:星际", out.get(0).vodName);
+        VodPage out = new JsSpiderAdapter(JS).search("星际", 1);
+        assertEquals(1, out.vods.size());
+        assertEquals("搜索到:星际", out.vods.get(0).vodName);
     }
 
     @Test

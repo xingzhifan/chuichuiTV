@@ -3,6 +3,7 @@ package com.chuichui.video.api;
 import com.chuichui.video.bean.Category;
 import com.chuichui.video.bean.Detail;
 import com.chuichui.video.bean.Vod;
+import com.chuichui.video.bean.VodPage;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,11 +17,11 @@ public interface SourceAdapter {
     /** 分类列表（浏览入口）。 */
     List<Category> home() throws IOException;
 
-    /** 某分类下的片源列表（第 pg 页）。 */
-    List<Vod> category(String typeId, int pg) throws IOException;
+    /** 某分类下的片源列表（第 pg 页，含分页元数据）。 */
+    VodPage category(String typeId, int pg) throws IOException;
 
-    /** 关键词搜索片源。 */
-    List<Vod> search(String kw, int pg) throws IOException;
+    /** 关键词搜索片源（第 pg 页，含分页元数据）。 */
+    VodPage search(String kw, int pg) throws IOException;
 
     /** 片源详情：片源 + 多线路 + 每线路的集。 */
     Detail detail(String vodId) throws IOException;

@@ -2,7 +2,7 @@ package com.chuichui.video.api;
 
 import com.chuichui.video.bean.Category;
 import com.chuichui.video.bean.Detail;
-import com.chuichui.video.bean.Vod;
+import com.chuichui.video.bean.VodPage;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -25,13 +25,13 @@ public class MaccmsAdapter implements SourceAdapter {
     }
 
     @Override
-    public List<Vod> category(String typeId, int pg) throws IOException {
-        return MaccmsJson.vods(get("ac=videolist&t=" + enc(typeId) + "&pg=" + pg));
+    public VodPage category(String typeId, int pg) throws IOException {
+        return MaccmsJson.vodsPage(get("ac=videolist&t=" + enc(typeId) + "&pg=" + pg));
     }
 
     @Override
-    public List<Vod> search(String kw, int pg) throws IOException {
-        return MaccmsJson.vods(get("ac=videolist&wd=" + enc(kw) + "&pg=" + pg));
+    public VodPage search(String kw, int pg) throws IOException {
+        return MaccmsJson.vodsPage(get("ac=videolist&wd=" + enc(kw) + "&pg=" + pg));
     }
 
     @Override

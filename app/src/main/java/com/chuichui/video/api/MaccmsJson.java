@@ -3,6 +3,7 @@ package com.chuichui.video.api;
 import com.chuichui.video.bean.Category;
 import com.chuichui.video.bean.Detail;
 import com.chuichui.video.bean.Vod;
+import com.chuichui.video.bean.VodPage;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -35,6 +36,14 @@ public final class MaccmsJson {
         return out;
     }
 
+    /** list[] + 分页元数据（pagecount/total）→ 一页片源结果。 */
+    public static VodPage vodsPage(JsonObject obj) {
+        int pageCount = intOr(obj, "pagecount", 0);
+        int total = intOr(obj, "total", -1);
+        if (total < 0) total = pageCount > 0 ? pageCount * 20 : 0; // 未给 total 时按默认每页 20 估算
+        return new VodPage(vods(obj), pageCount, total);
+    }
+
     /** list[0] → 片源详情（含线路/集）。 */
     public static Detail detail(JsonObject obj) {
         JsonArray a = obj.has("list") ? obj.getAsJsonArray("list") : new JsonArray();
@@ -57,5 +66,14 @@ public final class MaccmsJson {
 
     static String str(JsonObject o, String k) {
         return o.has(k) && !o.get(k).isJsonNull() ? o.get(k).getAsString() : "";
+    }
+
+    static int intOr(JsonObject o, String k, int def) {
+        if (!o.has(k) || o.get(k).isJsonNull()) return def;
+        try {
+            return o.get(k).getAsInt();
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 }

@@ -2,7 +2,7 @@ package com.chuichui.video.api;
 
 import com.chuichui.video.bean.Category;
 import com.chuichui.video.bean.Detail;
-import com.chuichui.video.bean.Vod;
+import com.chuichui.video.bean.VodPage;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.mozilla.javascript.BaseFunction;
@@ -47,13 +47,13 @@ public class JsSpiderAdapter implements SourceAdapter {
     }
 
     @Override
-    public List<Vod> category(String typeId, int pg) throws IOException {
-        return MaccmsJson.vods(JsonParser.parseString(call("category", "typeId", typeId, pg)).getAsJsonObject());
+    public VodPage category(String typeId, int pg) throws IOException {
+        return MaccmsJson.vodsPage(JsonParser.parseString(call("category", "typeId", typeId, pg)).getAsJsonObject());
     }
 
     @Override
-    public List<Vod> search(String kw, int pg) throws IOException {
-        return MaccmsJson.vods(JsonParser.parseString(call("search", "wd", kw, pg)).getAsJsonObject());
+    public VodPage search(String kw, int pg) throws IOException {
+        return MaccmsJson.vodsPage(JsonParser.parseString(call("search", "wd", kw, pg)).getAsJsonObject());
     }
 
     @Override
