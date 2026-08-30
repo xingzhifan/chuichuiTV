@@ -22,3 +22,8 @@ Thumbs.db
 # Machine-specific SDK setup scripts
 setup-android-sdk.ps1
 assemble-android-sdk.ps1
+
+# Logs / kotlin daemon
+debug.log
+build-log.txt
+.kotlin/
