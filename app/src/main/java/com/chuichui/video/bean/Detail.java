@@ -26,6 +26,7 @@ public class Detail {
         for (int i = 0; i < from.length; i++) {
             Line line = new Line();
             line.name = from[i].trim();
+            if (line.name.isEmpty()) line.name = "线路";  // 空线路名归一，保证首选线路匹配与展示
             String group = i < groups.length ? groups[i] : "";
             for (String ep : group.split("#")) {
                 if (ep.isEmpty()) continue;

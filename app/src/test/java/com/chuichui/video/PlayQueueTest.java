@@ -79,6 +79,19 @@ public class PlayQueueTest {
     }
 
     @Test
+    public void matchesEpisodesAcrossNamingFormats() {
+        List<PlayCandidate> current = Collections.singletonList(c("s1", "源一", "线1", "第01集", "u1"));
+        List<List<PlayCandidate>> others = Collections.singletonList(
+            Collections.singletonList(c("s2", "源二", "线A", "01", "u2")));   // 集名格式不同但数字一致
+
+        List<PlayCandidate> out = PlayCandidates.order(current, others, "第01集");
+
+        assertEquals(2, out.size());
+        assertEquals("u1", out.get(0).url);   // 当前源同名在前
+        assertEquals("u2", out.get(1).url);   // 跨源数字归一匹配次之
+    }
+
+    @Test
     public void dedupesSameUrlCandidates() {
         List<PlayCandidate> current = Arrays.asList(
             c("s1", "源一", "线1", "第01集", "same.mp4"),

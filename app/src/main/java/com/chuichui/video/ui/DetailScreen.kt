@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.chuichui.video.SourceRepo
-import com.chuichui.video.bean.Episode
+import com.chuichui.video.play.PlayRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -20,7 +20,7 @@ private data class PlayRow(val line: String, val episode: String, val url: Strin
 fun DetailScreen(
     vodId: String,
     title: String,
-    onPlay: (vodId: String, vodName: String, episode: String, line: String) -> Unit,
+    onPlay: (PlayRequest) -> Unit,
 ) {
     val ctx = LocalContext.current
     var rows by remember { mutableStateOf<List<PlayRow>>(emptyList()) }
@@ -29,7 +29,7 @@ fun DetailScreen(
         rows = loadFromSource(ctx) { adapter ->
             adapter.detail(vodId).lines.flatMap { line ->
                 line.episodes.map { ep ->
-                    PlayRow(line.name.ifEmpty { "线路" }, ep.name, ep.url)
+                    PlayRow(line.name, ep.name, ep.url)
                 }
             }
         }
@@ -38,7 +38,7 @@ fun DetailScreen(
     ScreenScaffold(title = title, loading = loading, empty = rows.isEmpty(), emptyText = "暂无可播放的集") {
         items(rows) { r ->
             ListRow(r.line + " | " + r.episode) {
-                onPlay(vodId, title, r.episode, r.line)
+                onPlay(PlayRequest(vodId = vodId, vodName = title, episode = r.episode, line = r.line))
             }
         }
     }

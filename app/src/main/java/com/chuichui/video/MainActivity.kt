@@ -15,6 +15,7 @@ import com.chuichui.video.ui.DetailScreen
 import com.chuichui.video.ui.PlayScreen
 import com.chuichui.video.ui.SourcesScreen
 import com.chuichui.video.ui.VodListScreen
+import com.chuichui.video.play.PlayRequest
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,10 +64,10 @@ class MainActivity : ComponentActivity() {
                         DetailScreen(
                             vodId = back.arguments?.getString("vodId").orEmpty(),
                             title = back.arguments?.getString("title").orEmpty(),
-                            onPlay = { vId, vName, episode, line ->
+                            onPlay = { request ->
                                 nav.navigate(
-                                    "play?vodId=${Uri.encode(vId)}&vodName=${Uri.encode(vName)}"
-                                        + "&episode=${Uri.encode(episode)}&line=${Uri.encode(line)}"
+                                    "play?vodId=${Uri.encode(request.vodId)}&vodName=${Uri.encode(request.vodName)}"
+                                        + "&episode=${Uri.encode(request.episode)}&line=${Uri.encode(request.line)}"
                                 )
                             }
                         )
@@ -82,10 +83,12 @@ class MainActivity : ComponentActivity() {
                         )
                     ) { back ->
                         PlayScreen(
-                            vodId = back.arguments?.getString("vodId").orEmpty(),
-                            vodName = back.arguments?.getString("vodName").orEmpty(),
-                            episode = back.arguments?.getString("episode").orEmpty(),
-                            line = back.arguments?.getString("line").orEmpty()
+                            request = PlayRequest(
+                                vodId = back.arguments?.getString("vodId").orEmpty(),
+                                vodName = back.arguments?.getString("vodName").orEmpty(),
+                                episode = back.arguments?.getString("episode").orEmpty(),
+                                line = back.arguments?.getString("line").orEmpty()
+                            )
                         )
                     }
                 }

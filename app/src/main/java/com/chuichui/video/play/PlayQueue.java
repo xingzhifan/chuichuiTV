@@ -44,4 +44,10 @@ public class PlayQueue {
         index++;
         return current();
     }
+
+    /** 当前候选起播成功：清零该源失败计数（恢复健康）。 */
+    public void markSuccessCurrent() {
+        PlayCandidate cur = current();
+        if (cur != null) health.markSuccess(cur.sourceId);
+    }
 }

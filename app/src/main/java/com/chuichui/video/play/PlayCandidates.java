@@ -10,7 +10,7 @@ import java.util.Set;
  * 1) 当前源中，与目标集名相同的候选（当前线路已由调用方排最前）；
  * 2) 其他源的同类候选，外层顺序 = 健康度升序（失败多的靠后）；
  * 3) 仅当所有源都没有同名集时 → 兜底：当前源全部候选 + 每个其他源的第一个候选（宁错换不空放）；
- * 最后按 url 去重。
+ * 最后按 url 去重。集名匹配支持数字归一（"第01集" ≍ "01"），容忍跨源命名差异。
  */
 public final class PlayCandidates {
 
@@ -48,9 +48,17 @@ public final class PlayCandidates {
     private static List<PlayCandidate> matching(List<PlayCandidate> in, String episodeName) {
         List<PlayCandidate> out = new ArrayList<>();
         for (PlayCandidate c : in) {
-            if (c.episodeName.equals(episodeName)) out.add(c);
+            if (episodeMatches(c.episodeName, episodeName)) out.add(c);
         }
         return out;
+    }
+
+    /** 集名匹配：精确相等，或去除非数字后一致（"第01集" ≍ "01"）。 */
+    static boolean episodeMatches(String candidate, String target) {
+        if (candidate.equals(target)) return true;
+        String a = candidate.replaceAll("\\D", "");
+        String b = target.replaceAll("\\D", "");
+        return !a.isEmpty() && a.equals(b);
     }
 
     private static List<PlayCandidate> firstOnly(List<PlayCandidate> in) {
