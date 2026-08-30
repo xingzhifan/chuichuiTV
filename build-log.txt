@@ -1,0 +1,105 @@
+﻿To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preMobileDebugBuild UP-TO-DATE
+> Task :app:mergeMobileDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateMobileDebugResources UP-TO-DATE
+> Task :app:packageMobileDebugResources UP-TO-DATE
+> Task :app:processMobileDebugNavigationResources UP-TO-DATE
+> Task :app:parseMobileDebugLocalResources UP-TO-DATE
+> Task :app:generateMobileDebugRFile UP-TO-DATE
+> Task :app:javaPreCompileMobileDebug UP-TO-DATE
+> Task :app:generateMobileDebugAssets UP-TO-DATE
+> Task :app:mergeMobileDebugAssets UP-TO-DATE
+> Task :app:compressMobileDebugAssets UP-TO-DATE
+> Task :app:generateMobileDebugGlobalSynthetics UP-TO-DATE
+> Task :app:checkMobileDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarMobileDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexMobileDebug UP-TO-DATE
+> Task :app:mergeLibDexMobileDebug UP-TO-DATE
+> Task :app:checkMobileDebugAarMetadata UP-TO-DATE
+> Task :app:mapMobileDebugSourceSetPaths UP-TO-DATE
+> Task :app:compileMobileDebugNavigationResources UP-TO-DATE
+> Task :app:mergeMobileDebugResources UP-TO-DATE
+> Task :app:createMobileDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksMobileDebug UP-TO-DATE
+> Task :app:processMobileDebugMainManifest UP-TO-DATE
+> Task :app:processMobileDebugManifest UP-TO-DATE
+> Task :app:processMobileDebugManifestForPackage UP-TO-DATE
+> Task :app:processMobileDebugResources UP-TO-DATE
+> Task :app:mergeMobileDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeMobileDebugNativeLibs UP-TO-DATE
+> Task :app:stripMobileDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningMobileDebug UP-TO-DATE
+> Task :app:writeMobileDebugAppMetadata UP-TO-DATE
+> Task :app:writeMobileDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preLeanbackDebugBuild UP-TO-DATE
+> Task :app:mergeLeanbackDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateLeanbackDebugResources UP-TO-DATE
+> Task :app:packageLeanbackDebugResources UP-TO-DATE
+> Task :app:processLeanbackDebugNavigationResources UP-TO-DATE
+> Task :app:parseLeanbackDebugLocalResources UP-TO-DATE
+> Task :app:generateLeanbackDebugRFile UP-TO-DATE
+> Task :app:javaPreCompileLeanbackDebug UP-TO-DATE
+> Task :app:generateLeanbackDebugAssets UP-TO-DATE
+> Task :app:mergeLeanbackDebugAssets UP-TO-DATE
+> Task :app:compressLeanbackDebugAssets UP-TO-DATE
+> Task :app:generateLeanbackDebugGlobalSynthetics UP-TO-DATE
+> Task :app:checkLeanbackDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarLeanbackDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexLeanbackDebug UP-TO-DATE
+> Task :app:mergeLibDexLeanbackDebug UP-TO-DATE
+> Task :app:checkLeanbackDebugAarMetadata UP-TO-DATE
+> Task :app:mapLeanbackDebugSourceSetPaths UP-TO-DATE
+> Task :app:compileLeanbackDebugNavigationResources UP-TO-DATE
+> Task :app:mergeLeanbackDebugResources UP-TO-DATE
+> Task :app:createLeanbackDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksLeanbackDebug UP-TO-DATE
+> Task :app:processLeanbackDebugMainManifest UP-TO-DATE
+> Task :app:processLeanbackDebugManifest UP-TO-DATE
+> Task :app:processLeanbackDebugManifestForPackage UP-TO-DATE
+> Task :app:processLeanbackDebugResources UP-TO-DATE
+> Task :app:mergeLeanbackDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeLeanbackDebugNativeLibs UP-TO-DATE
+> Task :app:stripLeanbackDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningLeanbackDebug UP-TO-DATE
+> Task :app:writeLeanbackDebugAppMetadata UP-TO-DATE
+> Task :app:writeLeanbackDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preMobileDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileMobileDebugUnitTest UP-TO-DATE
+> Task :app:compileLeanbackDebugKotlin
+> Task :app:compileMobileDebugKotlin
+> Task :app:compileMobileDebugJavaWithJavac
+> Task :app:processMobileDebugJavaRes UP-TO-DATE
+> Task :app:mergeMobileDebugJavaResource UP-TO-DATE
+> Task :app:dexBuilderMobileDebug
+> Task :app:compileLeanbackDebugJavaWithJavac FROM-CACHE
+> Task :app:processLeanbackDebugJavaRes UP-TO-DATE
+> Task :app:mergeLeanbackDebugJavaResource UP-TO-DATE
+> Task :app:dexBuilderLeanbackDebug
+> Task :app:bundleMobileDebugClassesToCompileJar
+> Task :app:bundleMobileDebugClassesToRuntimeJar
+> Task :app:mergeProjectDexMobileDebug
+> Task :app:compileMobileDebugUnitTestKotlin NO-SOURCE
+> Task :app:mergeProjectDexLeanbackDebug
+> Task :app:compileMobileDebugUnitTestJavaWithJavac UP-TO-DATE
+> Task :app:processMobileDebugUnitTestJavaRes NO-SOURCE
+> Task :app:testMobileDebugUnitTest
+> Task :app:packageLeanbackDebug
+> Task :app:createLeanbackDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleLeanbackDebug
+> Task :app:packageMobileDebug
+> Task :app:createMobileDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleMobileDebug
+
+[Incubating] Problems report is available at: file:///D:/coding/vibecoding/kuaikan/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 43s
+79 actionable tasks: 12 executed, 1 from cache, 66 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html

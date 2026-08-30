@@ -63,19 +63,30 @@ class MainActivity : ComponentActivity() {
                         DetailScreen(
                             vodId = back.arguments?.getString("vodId").orEmpty(),
                             title = back.arguments?.getString("title").orEmpty(),
-                            onPlay = { url, _ ->
-                                nav.navigate("play?url=${Uri.encode(url)}")
+                            onPlay = { vId, vName, episode, line ->
+                                nav.navigate(
+                                    "play?vodId=${Uri.encode(vId)}&vodName=${Uri.encode(vName)}"
+                                        + "&episode=${Uri.encode(episode)}&line=${Uri.encode(line)}"
+                                )
                             }
                         )
                     }
 
                     composable(
-                        route = "play?url={url}",
+                        route = "play?vodId={vodId}&vodName={vodName}&episode={episode}&line={line}",
                         arguments = listOf(
-                            navArgument("url") { type = NavType.StringType },
+                            navArgument("vodId") { type = NavType.StringType },
+                            navArgument("vodName") { type = NavType.StringType },
+                            navArgument("episode") { type = NavType.StringType },
+                            navArgument("line") { type = NavType.StringType },
                         )
                     ) { back ->
-                        PlayScreen(url = back.arguments?.getString("url").orEmpty())
+                        PlayScreen(
+                            vodId = back.arguments?.getString("vodId").orEmpty(),
+                            vodName = back.arguments?.getString("vodName").orEmpty(),
+                            episode = back.arguments?.getString("episode").orEmpty(),
+                            line = back.arguments?.getString("line").orEmpty()
+                        )
                     }
                 }
             }

@@ -13,19 +13,33 @@ import com.chuichui.video.bean.Episode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/** 详情：把所有线路的集拉平为"线路 | 集"，点击某集进入播放。换线路=选不同线路前缀的集。 */
+private data class PlayRow(val line: String, val episode: String, val url: String)
+
+/** 详情：把所有线路的集拉平为"线路 | 集"，点击某集进入播放（携带源/线路信息供故障切换）。 */
 @Composable
-fun DetailScreen(vodId: String, title: String, onPlay: (url: String, label: String) -> Unit) {
+fun DetailScreen(
+    vodId: String,
+    title: String,
+    onPlay: (vodId: String, vodName: String, episode: String, line: String) -> Unit,
+) {
     val ctx = LocalContext.current
-    var episodes by remember { mutableStateOf<List<Episode>>(emptyList()) }
+    var rows by remember { mutableStateOf<List<PlayRow>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(vodId) {
-        episodes = loadFromSource(ctx) { adapter -> adapter.detail(vodId).flatten() }
+        rows = loadFromSource(ctx) { adapter ->
+            adapter.detail(vodId).lines.flatMap { line ->
+                line.episodes.map { ep ->
+                    PlayRow(line.name.ifEmpty { "线路" }, ep.name, ep.url)
+                }
+            }
+        }
         loading = false
     }
-    ScreenScaffold(title = title, loading = loading, empty = episodes.isEmpty(), emptyText = "暂无可播放的集") {
-        items(episodes) { ep ->
-            ListRow(ep.name) { onPlay(ep.url, ep.name) }
+    ScreenScaffold(title = title, loading = loading, empty = rows.isEmpty(), emptyText = "暂无可播放的集") {
+        items(rows) { r ->
+            ListRow(r.line + " | " + r.episode) {
+                onPlay(vodId, title, r.episode, r.line)
+            }
         }
     }
 }

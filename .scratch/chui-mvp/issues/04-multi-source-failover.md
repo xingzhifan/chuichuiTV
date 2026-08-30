@@ -6,7 +6,7 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] 播放聚合多源候选队列，失败按序切换。
 - [ ] JVM 单测：候选队列优先级排序 + 失败切下一候选 + 失败源降级。
