@@ -6,9 +6,12 @@
 
 **Blocked by:** 02, 04, 08
 
-**Status:** ready-for-agent
+**Status:** resolved (pagination + scroll loading implemented & verified; on-device smoothness check pending by user on Xiaomi TV)
 
-- [ ] 低配电视上分类浏览、进详情、播放全链路无明显卡顿/发热。
-- [ ] 若某项不达标，指明卡点并回对应 ticket 修。
+- [x] 代码侧：分类列表 + 搜索改为滚动加载/虚拟化（VodPage 携带 pagecount，PagedVodListState + 共享 AutoLoadMore），mock 已生成多页数据用于验证（page1=20, page2=9, pagecount=2）。
+- [x] JVM 测试（MaccmsJsonTest.vodsPage / hasMore）与两种 flavor 编译、assemble 全绿；commit 641456b。
+- [ ] 低配电视上分类浏览、进详情、播放全链路无明显卡顿/发热。（用户上小米电视验证）
 
 **评审遗留（ticket-02 /code-review）：** 片源列表目前只拉 `category(typeId, 1)` 第 1 页，无翻页/滚动加载——本 ticket 虚拟化+滚动加载时一并补。**搜索（ticket-06）同样仅第 1 页**，分页一并处理。
+
+**已处理：** 本 ticket 完成该评审遗留——`SourceAdapter.category/search` 改为返回 `VodPage`（含 pagecount/total），分类列表与搜索结果均滚动到底自动翻页（共享 `AutoLoadMore`）。三级验证（ADR-0003 的两级缓存/低码率默认）属后续 ticket，不在此范围。
