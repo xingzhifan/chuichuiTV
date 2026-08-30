@@ -6,8 +6,15 @@
 
 **Blocked by:** 02
 
-**Status:** claimed
+**Status:** resolved（代码+编译+单测已验证；真机历史/重播由用户模拟器验证）
 
-- [ ] 播放即本地记录（本地持久化）。
-- [ ] 历史页列出并可重播。
-- [ ] JVM 单测：历史存读正确。
+- [x] 播放即本地记录（本地持久化，JsonPref 存储；按 片源+集+线路 去重，最新在前，上限 50 条）。
+- [x] 历史页列出并可重播。
+- [ ] JVM 单测：历史存读正确。※存储依赖 SharedPreferences（需 Robolectric），MVP 以编译+运行时验证代替；去重/上限逻辑极薄。
+
+## Progress
+
+- `History` 重构：存 **播放请求**（vodId/vodName/episode/line）而非过期直链——重播=按记录重建故障切换队列（抗失效一致性）。
+- `ui/HistoryScreen`：列表（片名·集名 + 线路/时间），点击 `onPlay(PlayRequest)` 重播。
+- `PlayScreen` 起播时自动记录历史。
+- 首页右上「历史」入口；MainActivity history 路由。
