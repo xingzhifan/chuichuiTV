@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.chuichui.video.SourceRepo
-import com.chuichui.video.api.Maccms
 import com.chuichui.video.bean.Episode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +20,7 @@ fun DetailScreen(vodId: String, title: String, onPlay: (url: String, label: Stri
     var episodes by remember { mutableStateOf<List<Episode>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(vodId) {
-        episodes = loadFromSource(ctx) { api -> Maccms(api).detail(vodId).flatten() }
+        episodes = loadFromSource(ctx) { adapter -> adapter.detail(vodId).flatten() }
         loading = false
     }
     ScreenScaffold(title = title, loading = loading, empty = episodes.isEmpty(), emptyText = "暂无可播放的集") {

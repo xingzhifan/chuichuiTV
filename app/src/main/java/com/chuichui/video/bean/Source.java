@@ -1,16 +1,32 @@
 package com.chuichui.video.bean;
 
-/** 源（Source）：一个内容提供方，即一个可配置的 Content 源（苹果 CMS 采集 API 端点）。 */
+import com.google.gson.annotations.SerializedName;
+
+/** 源（Source）：一个内容提供方（苹果 CMS 采集 API 端点或 JS 蜘蛛脚本），由 type 区分协议。 */
 public class Source {
+
+    public enum Type {
+        /** 苹果 CMS 采集 API。 */
+        @SerializedName("maccms") MACCMS,
+        /** JS 蜘蛛脚本（api 字段存脚本地址或脚本内容）。 */
+        @SerializedName("js") JS_SPIDER
+    }
+
     public String name;
     public String api;
+    public Type type = Type.MACCMS;
 
     public Source() {
     }
 
     public Source(String name, String api) {
+        this(name, api, Type.MACCMS);
+    }
+
+    public Source(String name, String api, Type type) {
         this.name = name;
         this.api = api;
+        this.type = type;
     }
 
     @Override

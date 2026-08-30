@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.chuichui.video.SourceRepo
-import com.chuichui.video.api.Maccms
 import com.chuichui.video.bean.Vod
 
 /** 片源列表：某分类下的片源，点击进入详情。 */
@@ -19,7 +18,7 @@ fun VodListScreen(typeId: String, title: String, onOpenVod: (vodId: String, name
     var vods by remember { mutableStateOf<List<Vod>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(typeId) {
-        vods = loadFromSource(ctx) { api -> Maccms(api).category(typeId, 1) }
+        vods = loadFromSource(ctx) { adapter -> adapter.category(typeId, 1) }
         loading = false
     }
     ScreenScaffold(title = title, loading = loading, empty = vods.isEmpty(), emptyText = "该分类暂无片源") {

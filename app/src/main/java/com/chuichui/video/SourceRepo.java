@@ -1,10 +1,9 @@
 package com.chuichui.video;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.chuichui.video.bean.Source;
-import com.google.gson.Gson;
+import com.chuichui.video.data.JsonPref;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -12,35 +11,20 @@ import java.util.List;
 
 /** 订阅/源仓库：本地保存用户配置的多个源（多源并存）。空壳定位，内容由用户源决定。 */
 public class SourceRepo {
-    private static final String PREF = "chui_src";
-    private static final String KEY = "list";
-    private final Context app;
-    private final SharedPreferences sp;
-    private final Gson gson = new Gson();
+
+    private final JsonPref<List<Source>> pref;
 
     public SourceRepo(Context c) {
-        app = c.getApplicationContext();
-        sp = app.getSharedPreferences(PREF, Context.MODE_PRIVATE);
-    }
-
-    /** 首个（默认）源的采集 API 地址；未配置时返回空串。 */
-    public synchronized String firstApi() {
-        List<Source> list = load();
-        return list.isEmpty() ? "" : list.get(0).api;
+        pref = new JsonPref<>(c, "chui_src", "list", new TypeToken<List<Source>>() {});
     }
 
     public synchronized void save(List<Source> list) {
-        sp.edit().putString(KEY, gson.toJson(list)).apply();
+        pref.set(list);
     }
 
+    /** 已配置的源；未配置时返回空列表（纯空壳：不预置任何源）。 */
     public synchronized List<Source> load() {
-        String s = sp.getString(KEY, null);
-        if (s == null) return new ArrayList<>();
-        try {
-            List<Source> list = gson.fromJson(s, new TypeToken<List<Source>>() {}.getType());
-            return list != null ? list : new ArrayList<>();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
+        List<Source> list = pref.get();
+        return list != null ? list : new ArrayList<>();
     }
 }

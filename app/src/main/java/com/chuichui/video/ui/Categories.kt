@@ -23,8 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.chuichui.video.SourceRepo
-import com.chuichui.video.api.Maccms
 import com.chuichui.video.bean.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,7 +34,7 @@ fun Categories(onOpenCategory: (typeId: String, title: String) -> Unit) {
     var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
-        categories = loadFromSource(ctx) { api -> Maccms(api).home() }
+        categories = loadFromSource(ctx) { adapter -> adapter.home() }
         loading = false
     }
     ScreenScaffold(title = "锤锤影视", loading = loading, empty = categories.isEmpty(), emptyText = "未配置可用源\n请稍后接入采集源") {

@@ -6,7 +6,7 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] `SourceAdapter` 接口 + `MaccmsAdapter`/`JsSpiderAdapter` + `SourceFactory` 齐备。
 - [ ] JVM 单测：两适配器返回统一领域模型，`$$$/#/$` 拆解正确。
