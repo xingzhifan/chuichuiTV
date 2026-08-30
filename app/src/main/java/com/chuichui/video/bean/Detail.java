@@ -41,8 +41,9 @@ public class Detail {
     public List<Episode> flatten() {
         List<Episode> out = new ArrayList<>();
         for (Line line : lines) {
+            String ln = (line.name == null || line.name.isEmpty()) ? "线路" : line.name;
             for (Episode ep : line.episodes) {
-                out.add(new Episode(line.name + " | " + ep.name, ep.url));
+                out.add(new Episode(ln + " | " + ep.name, ep.url));
             }
         }
         return out;

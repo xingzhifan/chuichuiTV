@@ -55,23 +55,19 @@ class MainActivity : ComponentActivity() {
                         DetailScreen(
                             vodId = back.arguments?.getString("vodId").orEmpty(),
                             title = back.arguments?.getString("title").orEmpty(),
-                            onPlay = { url, label ->
-                                nav.navigate("play?url=${Uri.encode(url)}&title=${Uri.encode(label)}")
+                            onPlay = { url, _ ->
+                                nav.navigate("play?url=${Uri.encode(url)}")
                             }
                         )
                     }
 
                     composable(
-                        route = "play?url={url}&title={title}",
+                        route = "play?url={url}",
                         arguments = listOf(
                             navArgument("url") { type = NavType.StringType },
-                            navArgument("title") { type = NavType.StringType },
                         )
                     ) { back ->
-                        PlayScreen(
-                            url = back.arguments?.getString("url").orEmpty(),
-                            title = back.arguments?.getString("title").orEmpty()
-                        )
+                        PlayScreen(url = back.arguments?.getString("url").orEmpty())
                     }
                 }
             }

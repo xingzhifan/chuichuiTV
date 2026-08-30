@@ -10,3 +10,5 @@
 
 - [ ] 播放聚合多源候选队列，失败按序切换。
 - [ ] JVM 单测：候选队列优先级排序 + 失败切下一候选 + 失败源降级。
+
+**评审遗留（ticket-02 /code-review）：** 当前 `Detail.flatten()` 把线路身份压成"线路 | 集"字符串（Primitive Obsession）。故障切换需要线路作为一等结构（哪个源、哪条线路），本 ticket 重构时显式建模（如 PlayCandidate{source, line, url}）。

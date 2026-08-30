@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -35,10 +36,7 @@ fun Categories(onOpenCategory: (typeId: String, title: String) -> Unit) {
     var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
-        categories = withContext(Dispatchers.IO) {
-            val api = SourceRepo(ctx).firstApi()
-            try { if (api.isEmpty()) emptyList() else Maccms(api).home() } catch (e: Exception) { emptyList() }
-        }
+        categories = loadFromSource(ctx) { api -> Maccms(api).home() }
         loading = false
     }
     ScreenScaffold(title = "锤锤影视", loading = loading, empty = categories.isEmpty(), emptyText = "未配置可用源\n请稍后接入采集源") {
@@ -71,13 +69,13 @@ internal fun ScreenScaffold(
     }
 }
 
-/** 列表行：可点击。 */
+/** 列表行：可点击（宽度撑满、高度自适应）。 */
 @Composable
 internal fun ListRow(text: String, onClick: () -> Unit) {
     Text(
         text,
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(vertical = 14.dp, horizontal = 8.dp)
             .clickable { onClick() }
     )
