@@ -9,15 +9,15 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 订阅/源仓库：本地保存用户配置的多个源（多源并存）。空壳定位，内容由用户源决定。 */
+/** 订阅/源仓库：本地保存用户配置的多个源与当前选中（按稳定 id）。空壳定位，内容由用户源决定。 */
 public class SourceRepo {
 
     private final JsonPref<List<Source>> pref;
-    private final JsonPref<Integer> selPref;
+    private final JsonPref<String> selPref;
 
     public SourceRepo(Context c) {
         pref = new JsonPref<>(c, "chui_src", "list", new TypeToken<List<Source>>() {});
-        selPref = new JsonPref<>(c, "chui_src", "selected", new TypeToken<Integer>() {});
+        selPref = new JsonPref<>(c, "chui_src", "selectedId", new TypeToken<String>() {});
     }
 
     public synchronized void save(List<Source> list) {
@@ -30,13 +30,13 @@ public class SourceRepo {
         return list != null ? list : new ArrayList<>();
     }
 
-    /** 当前浏览的源索引（首页/搜索用它；故障切换在 ticket 04 扩展到全源）。 */
-    public synchronized int selected() {
-        Integer i = selPref.get();
-        return i == null ? 0 : i;
+    /** 当前浏览源的稳定 id；空串 = 未选中（加载层回退到首个源）。 */
+    public synchronized String selectedId() {
+        String id = selPref.get();
+        return id == null ? "" : id;
     }
 
-    public synchronized void setSelected(int index) {
-        selPref.set(index);
+    public synchronized void setSelectedId(String id) {
+        selPref.set(id);
     }
 }

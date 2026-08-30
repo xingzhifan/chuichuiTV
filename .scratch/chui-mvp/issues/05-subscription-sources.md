@@ -2,11 +2,23 @@
 
 # 05 — 订阅配置导入 / 多源并存 UI
 
-**What to build:** 应用内可增删"源"（苹果CMS/JS 采集地址）并持久化；默认示例源；首页/搜索能看来自多个源的内容。
+**What to build:** 应用内可增删"源"（苹果CMS 采集地址 / JS 蜘蛛脚本地址）并持久化；首页通过源选择器切换浏览不同源；搜索（ticket 06）沿用同一选中源。
 
 **Blocked by:** 03
 
-**Status:** claimed
+**Status:** resolved（代码+编译+单测已验证；真机操作由用户模拟器验证）
 
-- [ ] 设置里增删源并持久化（多源并存，支持 采集API / JS 蜘蛛 两种类型）。
-- [ ] 首页可通过源选择器切换浏览不同源；搜索（ticket 06）沿用同一选中源。
+- [x] 设置里增删源并持久化（多源并存，支持 采集API / JS 蜘蛛 两种类型；选中按稳定 id，删源/重排不漂移）。
+- [x] 首页源选择器切换浏览；搜索（ticket 06）沿用同一选中源。
+
+**与 spec 的差距（记入 ticket 10）：**
+- spec 的"导入订阅配置（链接/文件/粘贴）"本 ticket 简化为"手动逐条添加"；**批量导入**拆为 ticket 10。
+- 原 ticket 文本"默认示例源"已按 ticket-03 评审结论移除：**空壳默认空列表**，不预置任何源。
+
+## Progress
+
+- `SourcesScreen`：增删源（名称+地址+类型切换）、点列表项设为当前浏览源、删除边界（删当前选中→回退首个、删到空→空态）。
+- `Categories`：源选择器 chips（多源时显示）+ 右上「源」入口；进入时显式重读 repo（源管理的增删即时反映）。
+- `Source` 增稳定 `id`（UUID）；`SourceRepo` 选中改按 id（消除索引漂移与三处 coerce 重复，/code-review 判断题落地）。
+- 共享 `SelectChip`；`ScreenScaffold` 删除无调用方的 `modifier` 参数。
+- 验证：`assembleMobileDebug`+`assembleLeanbackDebug`+`testMobileDebugUnitTest` BUILD SUCCESSFUL。

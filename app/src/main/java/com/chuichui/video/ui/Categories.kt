@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Category
 
-/** 分类首页：源选择器（多源并存）+ 当前源的分类列表；右上「源」进入源管理。 */
+/** 分类首页：源选择器（多源并存，按稳定 id 切换）+ 当前源的分类列表；右上「源」进入源管理。 */
 @Composable
 fun Categories(
     onOpenCategory: (typeId: String, title: String) -> Unit,
@@ -40,13 +40,15 @@ fun Categories(
     val ctx = LocalContext.current
     val repo = remember { SourceRepo(ctx) }
     var sources by remember { mutableStateOf(repo.load()) }
-    var selected by remember {
-        mutableStateOf(repo.selected().coerceIn(0, (sources.size - 1).coerceAtLeast(0)))
-    }
+    var selectedId by remember { mutableStateOf(repo.selectedId()) }
     var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
-    LaunchedEffect(selected) {
+    // 显式重读 repo：从源管理页返回（或切换选中）时，选择器与列表都反映最新状态。
+    LaunchedEffect(selectedId) {
+        sources = repo.load()
+        if (sources.none { it.id == selectedId }) selectedId = sources.firstOrNull()?.id ?: ""
+        repo.setSelectedId(selectedId)
         loading = true
         categories = loadFromSource(ctx) { adapter -> adapter.home() }
         loading = false
@@ -74,20 +76,13 @@ fun Categories(
                         .padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
                 ) {
                     sources.forEachIndexed { idx, s ->
-                        val isSel = idx == selected
-                        Text(
-                            s.name,
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .background(
-                                    if (isSel) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.surfaceVariant
-                                )
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                                .clickable {
-                                    repo.setSelected(idx)
-                                    selected = idx
-                                }
+                        SelectChip(
+                            text = s.name,
+                            selected = s.id == selectedId,
+                            onClick = {
+                                repo.setSelectedId(s.id)
+                                selectedId = s.id
+                            }
                         )
                     }
                 }
@@ -107,12 +102,11 @@ internal fun ScreenScaffold(
     loading: Boolean,
     empty: Boolean,
     emptyText: String,
-    modifier: Modifier = Modifier,
     actions: (@Composable () -> Unit)? = null,
     header: (@Composable () -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
-    Column(Modifier.fillMaxSize().then(modifier)) {
+    Column(Modifier.fillMaxSize()) {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -133,6 +127,22 @@ internal fun ScreenScaffold(
             else -> LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), content = content)
         }
     }
+}
+
+/** 共享选择 Chip：高亮当前项（源选择器 / 类型切换复用）。 */
+@Composable
+internal fun SelectChip(text: String, selected: Boolean, onClick: () -> Unit) {
+    Text(
+        text,
+        modifier = Modifier
+            .padding(end = 8.dp)
+            .background(
+                if (selected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.surfaceVariant
+            )
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable { onClick() }
+    )
 }
 
 /** 列表行：可点击（宽度撑满、高度自适应）。 */

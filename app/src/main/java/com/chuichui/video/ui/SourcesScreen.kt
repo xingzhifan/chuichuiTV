@@ -29,23 +29,24 @@ import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Source
 
-/** 源管理：增删源（采集API / JS 蜘蛛）并持久化；点列表项=设为当前浏览源。 */
+/** 源管理：增删源（采集API / JS 蜘蛛）并持久化；点列表项=设为当前浏览源（按稳定 id）。 */
 @Composable
 fun SourcesScreen(onClose: () -> Unit) {
     val ctx = LocalContext.current
     val repo = remember { SourceRepo(ctx) }
     var sources by remember { mutableStateOf(repo.load()) }
-    var selected by remember { mutableStateOf(repo.selected()) }
+    var selectedId by remember { mutableStateOf(repo.selectedId()) }
     var name by remember { mutableStateOf("") }
     var api by remember { mutableStateOf("") }
     var isJs by remember { mutableStateOf(false) }
 
-    fun persist(list: List<Source>, sel: Int) {
-        val clamped = if (list.isEmpty()) 0 else sel.coerceIn(0, list.size - 1)
+    fun persist(list: List<Source>, selId: String) {
         repo.save(list)
-        repo.setSelected(clamped)
+        // 选中 id 不在列表里（被删/列表为空）时回退到首个源
+        val effective = if (list.any { it.id == selId }) selId else (list.firstOrNull()?.id ?: "")
+        repo.setSelectedId(effective)
         sources = list
-        selected = clamped
+        selectedId = effective
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
@@ -71,14 +72,14 @@ fun SourcesScreen(onClose: () -> Unit) {
             modifier = Modifier.fillMaxWidth()
         )
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp)) {
-            TypeChip("采集API", !isJs) { isJs = false }
-            TypeChip("JS蜘蛛", isJs) { isJs = true }
+            SelectChip("采集API", !isJs) { isJs = false }
+            SelectChip("JS蜘蛛", isJs) { isJs = true }
             Spacer(Modifier.weight(1f))
             Button(onClick = {
                 if (name.isNotBlank() && api.isNotBlank()) {
-                    val list = sources.toMutableList()
-                    list.add(Source(name.trim(), api.trim(), if (isJs) Source.Type.JS_SPIDER else Source.Type.MACCMS))
-                    persist(list, selected)
+                    val src = Source(name.trim(), api.trim(), if (isJs) Source.Type.JS_SPIDER else Source.Type.MACCMS)
+                    val list = sources.toMutableList().apply { add(src) }
+                    persist(list, src.id) // 新加的源设为当前浏览源
                     name = ""
                     api = ""
                 }
@@ -102,10 +103,10 @@ fun SourcesScreen(onClose: () -> Unit) {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { persist(sources, idx) }
+                            .clickable { persist(sources, s.id) }
                     ) {
                         val kind = if (s.type == Source.Type.JS_SPIDER) "JS" else "采集"
-                        val mark = if (idx == selected) "✓ 当前浏览：" else ""
+                        val mark = if (s.id == selectedId) "✓ 当前浏览：" else ""
                         Text(mark + s.name + "（" + kind + "）")
                         Text(s.api, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                     }
@@ -116,7 +117,7 @@ fun SourcesScreen(onClose: () -> Unit) {
                             .clickable {
                                 val list = sources.toMutableList()
                                 list.removeAt(idx)
-                                persist(list, selected)
+                                persist(list, selectedId)
                             }
                             .padding(8.dp)
                     )
@@ -124,19 +125,4 @@ fun SourcesScreen(onClose: () -> Unit) {
             }
         }
     }
-}
-
-@Composable
-private fun TypeChip(text: String, selected: Boolean, onClick: () -> Unit) {
-    Text(
-        text,
-        modifier = Modifier
-            .padding(end = 8.dp)
-            .background(
-                if (selected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surfaceVariant
-            )
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clickable { onClick() }
-    )
 }

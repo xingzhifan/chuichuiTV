@@ -2,6 +2,8 @@ package com.chuichui.video.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.UUID;
+
 /** 源（Source）：一个内容提供方（苹果 CMS 采集 API 端点或 JS 蜘蛛脚本），由 type 区分协议。 */
 public class Source {
 
@@ -12,6 +14,8 @@ public class Source {
         @SerializedName("js") JS_SPIDER
     }
 
+    /** 稳定 id：选中等持久化用它（删源/重排不漂移）。 */
+    public String id = UUID.randomUUID().toString();
     public String name;
     public String api;
     public Type type = Type.MACCMS;
