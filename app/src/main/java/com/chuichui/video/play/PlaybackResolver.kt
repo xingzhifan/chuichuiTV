@@ -33,12 +33,22 @@ object PlaybackResolver {
                 sources.filter { it.id != current.id }.map { it.id }
             ).mapNotNull { id -> sources.firstOrNull { it.id == id } }
 
-            // 当前源：详情重取，优先线路排最前
+            // 当前源：所点(线路,集)最先 → 本线其余集 → 其他线路（全部保留：同源其他线路是同一内容的不同流）
             val currentCandidates = try {
                 val detail = SourceFactory.create(current).detail(request.vodId)
-                val preferred = detail.lines.firstOrNull { it.name == request.line }
-                val rest = detail.lines.filter { it.name != request.line }
-                toCandidates(listOfNotNull(preferred) + rest, current.id, current.name)
+                val candidates = mutableListOf<PlayCandidate>()
+                val preferredLine = detail.lines.firstOrNull { it.name == request.line }
+                preferredLine?.let { line ->
+                    line.episodes.sortedByDescending { it.name == request.episode }.forEach { ep ->
+                        candidates.add(PlayCandidate(current.id, current.name, line.name, ep.name, ep.url))
+                    }
+                }
+                detail.lines.filter { it.name != request.line }.forEach { line ->
+                    line.episodes.forEach { ep ->
+                        candidates.add(PlayCandidate(current.id, current.name, line.name, ep.name, ep.url))
+                    }
+                }
+                candidates
             } catch (e: Exception) {
                 emptyList()
             }

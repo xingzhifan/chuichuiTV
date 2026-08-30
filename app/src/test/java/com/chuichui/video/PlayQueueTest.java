@@ -39,10 +39,13 @@ public class PlayQueueTest {
         List<PlayCandidate> out = PlayCandidates.order(
             current, new ArrayList<>(others.values()), "第01集");
 
-        assertEquals(3, out.size());
-        assertEquals("u1", out.get(0).url); // 当前线路优先
-        assertEquals("u2", out.get(1).url); // 当前源其他线路
-        assertEquals("u4", out.get(2).url); // 其他源同名集
+        // 期望：所点 → 同源其他线路同名 → 跨源同名(健康序) → 同源不同集(最后手段) → 无同名源首个
+        assertEquals(5, out.size());
+        assertEquals("u1", out.get(0).url);   // 所点：线1/第01集
+        assertEquals("u2", out.get(1).url);   // 同源其他线路：线2/第01集
+        assertEquals("u4", out.get(2).url);   // 跨源同名：s2/第01集
+        assertEquals("u3", out.get(3).url);   // 同源不同集（最后手段）
+        assertEquals("u5", out.get(4).url);   // s3 无同名集的首个（最末）
     }
 
     @Test
