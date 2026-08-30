@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- leanback(电视) flavor 专属清单：
      1) 给 MainActivity 追加 LEANBACK_LAUNCHER 分类（电视桌面入口；与 main 的 LAUNCHER 并存，手机/电视都能启动）；
-     2) 声明 uses-feature leanback required=false（不强制电视特性，手机也可安装）。 -->
+     2) banner：小米电视桌面（PatchWall）以 banner 展示入口（缺失可能不显示/默认图标）；
+     3) 声明 uses-feature leanback required=false（不强制电视特性，手机也可安装）。
+     注：exported/screenOrientation 等属性由 main 清单合并，此处只声明差异。 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
 
-    <application>
+    <application
+        android:banner="@drawable/ic_banner_tv">
         <activity
             android:name=".MainActivity"
-            android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
