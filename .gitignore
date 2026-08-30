@@ -27,3 +27,6 @@ assemble-android-sdk.ps1
 debug.log
 build-log.txt
 .kotlin/
+
+# Modsearch is a separate DSH tool, not part of this movie client — exclude from public repo
+/modsearch/

@@ -1,0 +1,40 @@
+name: update-sources
+
+# 定时探活并维护 sources.json：清掉失效源、回写存活源；有变化自动提交。
+# 推送 sources.json 到仓库后，配合 GitHub Pages（Settings → Pages → Deploy from a branch，
+# 选 docs/ 或 root），即可通过 https://<user>.github.io/<repo>/sources.json 公网拉取。
+on:
+  schedule:
+    # 每天 06:30 UTC（北京时间 14:30）执行
+    - cron: "30 6 * * *"
+  workflow_dispatch: {}   # 手动触发
+  push:
+    paths: ["sources.json", "probe-sources.ps1", ".github/workflows/update-sources.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: windows-latest        # 探活脚本是 PowerShell
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Probe sources and rewrite sources.json
+        shell: pwsh
+        run: ./probe-sources.ps1
+
+      - name: Commit if changed
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet HEAD -- sources.json; then
+            echo "no change"
+          else
+            git add sources.json
+            git commit -m "chore(sources): prune dead sources (auto)"
+            git push
+          fi
