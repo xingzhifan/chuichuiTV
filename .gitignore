@@ -30,3 +30,6 @@ build-log.txt
 
 # Modsearch is a separate DSH tool, not part of this movie client — exclude from public repo
 /modsearch/
+
+# Standalone public source repo (keep as its own git repo, do not nest-track in this project)
+/publish-sources/

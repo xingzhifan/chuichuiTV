@@ -1,52 +1,7 @@
 [
-    {
-        "name":  "无尽资源",
-        "api":  "https://api.wujinapi.me/api.php/provide/vod/",
-        "type":  "maccms"
-    },
-    {
-        "name":  "魔都资源",
-        "api":  "https://www.mdzyapi.com/api.php/provide/vod/",
-        "type":  "maccms"
-    },
-    {
-        "name":  "360资源",
-        "api":  "https://360zy.com/api.php/provide/vod",
-        "type":  "maccms"
-    },
-    {
-        "name":  "飘零影院",
-        "api":  "https://p2100.net/api.php/provide/vod/",
-        "type":  "maccms"
-    },
-    {
-        "name":  "爱奇艺资源",
-        "api":  "https://iqiyizyapi.com/api.php/provide/vod",
-        "type":  "maccms"
-    },
-    {
-        "name":  "暴风资源",
-        "api":  "https://bfzyapi.com/api.php/provide/vod/",
-        "type":  "maccms"
-    },
-    {
-        "name":  "天涯影视资源",
-        "api":  "https://tyyszyapi.com/api.php/provide/vod",
-        "type":  "maccms"
-    },
-    {
-        "name":  "闪电资源",
-        "api":  "http://sdzyapi.com/api.php/provide/vod",
-        "type":  "maccms"
-    },
-    {
-        "name":  "丫丫资源",
-        "api":  "https://cj.yayazy.net/api.php/provide/vod/",
-        "type":  "maccms"
-    },
-    {
-        "name":  "最大资源",
-        "api":  "http://zuidazy.me/api.php/provide/vod/",
-        "type":  "maccms"
-    }
+  {"name": "魔都资源", "api": "https://www.mdzyapi.com/api.php/provide/vod/", "type": "maccms"},
+  {"name": "360资源", "api": "https://360zy.com/api.php/provide/vod", "type": "maccms"},
+  {"name": "爱奇艺资源", "api": "https://iqiyizyapi.com/api.php/provide/vod", "type": "maccms"},
+  {"name": "天涯影视资源", "api": "https://tyyszyapi.com/api.php/provide/vod", "type": "maccms"},
+  {"name": "采集聚合", "api": "http://cj.lziapi.com/api.php/provide/vod/", "type": "maccms"}
 ]
