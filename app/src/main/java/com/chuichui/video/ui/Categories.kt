@@ -31,11 +31,12 @@ import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Category
 
-/** 分类首页：源选择器（多源并存）+ 当前源的分类列表；右上「搜索」与「源」入口。 */
+/** 分类首页：源选择器（多源并存）+ 当前源的分类列表；右上「搜索」「历史」「源」入口。 */
 @Composable
 fun Categories(
     onOpenCategory: (typeId: String, title: String) -> Unit,
     onOpenSearch: () -> Unit,
+    onOpenHistory: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
     val ctx = LocalContext.current
@@ -65,6 +66,12 @@ fun Categories(
                 "搜索",
                 modifier = Modifier
                     .clickable { onOpenSearch() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            )
+            Text(
+                "历史",
+                modifier = Modifier
+                    .clickable { onOpenHistory() }
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             )
             Text(

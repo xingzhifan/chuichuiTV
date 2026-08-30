@@ -6,7 +6,7 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] 播放即本地记录（本地持久化）。
 - [ ] 历史页列出并可重播。

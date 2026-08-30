@@ -8,19 +8,30 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 观看历史：本地 JSON 存储（MVP，不联网）。 */
+/**
+ * 观看历史：本地 JSON 存储（按 片源+集+线路 去重，最新在前，最多 MAX 条）。
+ * 重播 = 按记录的 vodId/vodName/episode/line 重建播放候选队列（天然支持故障切换，不依赖可能过期的直链）。
+ */
 public class History {
-    public String title;
-    public String url;
+    public String vodId;
+    public String vodName;
+    public String episode;
+    public String line;
     public long ts;
 
     public History() {
     }
 
-    public History(String title, String url) {
-        this.title = title;
-        this.url = url;
+    public History(String vodId, String vodName, String episode, String line) {
+        this.vodId = vodId;
+        this.vodName = vodName;
+        this.episode = episode;
+        this.line = line;
         this.ts = System.currentTimeMillis();
+    }
+
+    public String label() {
+        return vodName + " · " + episode;
     }
 
     public static class Store {
@@ -31,10 +42,13 @@ public class History {
             pref = new JsonPref<>(c, "chui_hist", "items", new TypeToken<List<History>>() {});
         }
 
-        public synchronized void add(String title, String url) {
+        public synchronized void add(History h) {
             List<History> list = load();
-            list.removeIf(h -> h.url != null && h.url.equals(url));
-            list.add(0, new History(title, url));
+            list.removeIf(x ->
+                x.vodId != null && x.vodId.equals(h.vodId)
+                    && x.episode != null && x.episode.equals(h.episode)
+                    && x.line != null && x.line.equals(h.line));
+            list.add(0, h);
             if (list.size() > MAX) list = list.subList(0, MAX);
             pref.set(list);
         }

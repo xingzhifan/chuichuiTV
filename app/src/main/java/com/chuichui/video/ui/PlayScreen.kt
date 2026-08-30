@@ -35,6 +35,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.chuichui.video.History
 import com.chuichui.video.play.PlayQueue
 import com.chuichui.video.play.PlayRequest
 import com.chuichui.video.play.PlaybackResolver
@@ -88,6 +89,7 @@ fun PlayScreen(request: PlayRequest) {
 
     LaunchedEffect(request) {
         queue = PlaybackResolver.buildQueue(context, request)
+        History.Store(context).add(History(request.vodId, request.vodName, request.episode, request.line))
     }
 
     queue?.let { q ->

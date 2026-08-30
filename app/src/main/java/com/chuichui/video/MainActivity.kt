@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.chuichui.video.ui.Categories
 import com.chuichui.video.ui.DetailScreen
+import com.chuichui.video.ui.HistoryScreen
 import com.chuichui.video.ui.PlayScreen
 import com.chuichui.video.ui.SearchScreen
 import com.chuichui.video.ui.SourcesScreen
@@ -32,12 +33,24 @@ class MainActivity : ComponentActivity() {
                                 nav.navigate("vodList?typeId=${Uri.encode(typeId)}&title=${Uri.encode(title)}")
                             },
                             onOpenSearch = { nav.navigate("search") },
+                            onOpenHistory = { nav.navigate("history") },
                             onOpenSettings = { nav.navigate("settings") }
                         )
                     }
 
                     composable("settings") {
                         SourcesScreen(onClose = { nav.popBackStack() })
+                    }
+
+                    composable("history") {
+                        HistoryScreen(
+                            onPlay = { request ->
+                                nav.navigate(
+                                    "play?vodId=${Uri.encode(request.vodId)}&vodName=${Uri.encode(request.vodName)}"
+                                        + "&episode=${Uri.encode(request.episode)}&line=${Uri.encode(request.line)}"
+                                )
+                            }
+                        )
                     }
 
                     composable("search") {
