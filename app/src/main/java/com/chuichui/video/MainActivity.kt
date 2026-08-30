@@ -18,25 +18,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chuichui.video.api.Maccms
-import com.chuichui.video.bean.Site
+import com.chuichui.video.bean.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { Browse() } }
+        setContent { MaterialTheme { Categories() } }
     }
 }
 
-/** 主源类别表：拉取第一个源的分类；含加载/空态占位。 */
+/** 分类首页：拉取源的「分类」，含加载/空态占位。 */
 @Composable
-fun Browse() {
+fun Categories() {
     val ctx = LocalContext.current
-    var sites by remember { mutableStateOf<List<Site>>(emptyList()) }
+    var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
-        sites = withContext(Dispatchers.IO) {
+        categories = withContext(Dispatchers.IO) {
             val api = try { SourceRepo(ctx).load().first().api } catch (e: Exception) { "" }
             try { if (api.isEmpty()) emptyList() else Maccms(api).home() } catch (e: Exception) { emptyList() }
         }
@@ -46,7 +46,7 @@ fun Browse() {
         loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("加载中…", color = Color.Gray)
         }
-        sites.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        categories.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 "未配置可用源\n请稍后接入采集源",
                 color = Color.Gray,
@@ -54,8 +54,8 @@ fun Browse() {
             )
         }
         else -> LazyColumn(Modifier.fillMaxSize().padding(16.dp)) {
-            items(sites) { s ->
-                Text(s.typeName, modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
+            items(categories) { c ->
+                Text(c.typeName, modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.chuichui.video.api;
 
+import com.chuichui.video.bean.Category;
 import com.chuichui.video.bean.Detail;
-import com.chuichui.video.bean.Site;
 import com.chuichui.video.bean.Vod;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -34,15 +34,15 @@ public class Maccms {
         this.base = base;
     }
 
-    public List<Site> home() throws IOException {
+    public List<Category> home() throws IOException {
         JsonObject obj = get("ac=list");
-        List<Site> sites = new ArrayList<>();
+        List<Category> categories = new ArrayList<>();
         JsonArray a = obj.has("class") ? obj.getAsJsonArray("class") : new JsonArray();
         for (JsonElement e : a) {
             JsonObject c = e.getAsJsonObject();
-            sites.add(new Site(get(c, "type_id"), get(c, "type_name")));
+            categories.add(new Category(get(c, "type_id"), get(c, "type_name")));
         }
-        return sites;
+        return categories;
     }
 
     public List<Vod> category(String tid, int pg) throws IOException {

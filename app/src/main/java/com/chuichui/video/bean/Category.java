@@ -1,14 +1,14 @@
 package com.chuichui.video.bean;
 
-/** 源（Source）：苹果 CMS 分类。class[] 中的一项。 */
-public class Site {
+/** 分类（Category）：源提供的片源目录分组（苹果 CMS class[] 的 type_id/type_name），浏览入口。 */
+public class Category {
     public String typeId;
     public String typeName;
 
-    public Site() {
+    public Category() {
     }
 
-    public Site(String typeId, String typeName) {
+    public Category(String typeId, String typeName) {
         this.typeId = typeId;
         this.typeName = typeName;
     }

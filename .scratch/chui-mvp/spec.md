@@ -1,8 +1,8 @@
 # 锤锤影视 — MVP 规格
 
-> 状态：draft（由 `/grill-with-docs` 定稿）
-> 关联：`CONTEXT.md` 词表、`docs/adr/0001–0003`
-> 应用名：锤锤影视 · `applicationId: com.chuichui.video` · 工程目录建议：`chuichui`
+> 状态：draft（由 `/grill-with-docs` 定稿；2026-08 随"自建极简壳"转向修订，见 ADR-0004/0005）
+> 关联：`CONTEXT.md` 词表、`docs/adr/0001–0005`
+> 应用名：锤锤影视 · `applicationId: com.chuichui.video` · 工程根：仓库根（`app/` 模块）
 
 ## 定位
 
@@ -10,22 +10,24 @@
 
 ## 平台 / 技术栈
 
-- Android 手机 + Android TV（leanback）双形态，同一工程。
-- **原生 Java + 经典 View**（XML + RecyclerView / Leanback）。
-- 播放：**ExoPlayer / Media3（硬解）**。
-- 源解析：catvod 系「JS 爬虫(spider)」 + 苹果 CMS(maccms) 采集 API 适配器。
+- Android 手机 + Android TV（leanback）双形态，同一工程（`mobile` / `leanback` flavor）。
+- **Kotlin + Jetpack Compose（含 Compose for TV）**（ADR-0005，2026-08 重定，取代原"Java + 经典 View"）。
+- 播放：**ExoPlayer / Media3（公开坐标，硬解）**。
+- 源解析：苹果 CMS(maccms) 采集 API 适配器 + **JS 蜘蛛**适配器（Rhino 轻量桥），统一 `SourceAdapter` 接口。
 
 ## 关键决策（详见 ADR）
 
 | ADR | 决策 |
 |-----|------|
 | 0001 | 纯客户端空壳，无自建后端 |
-| 0002 | fork catvod 开源系，重建轻量原生 View 版 UI（低配电视流畅） |
+| ~~0002~~ | ~~fork catvod 开源系~~ **已被 ADR-0004 取代** |
 | 0003 | 抗源失效客户端分层：多源多线路故障切换 + 健康检测 + 订阅自动刷新 + 本地缓存 |
+| 0004 | **自建极简壳**，不 fork（因 fork 各自绑定定制 media3 / 旧工具链） |
+| 0005 | **技术栈重定：Kotlin + Jetpack Compose（含 Compose for TV）**，取代原"Java + 经典 View" |
 
 ## 领域术语（见 CONTEXT.md）
 
-片源 / 电影 / 剧集 / 集 / 源 / 线路 / 播放地址 / 订阅配置 / 空壳
+片源 / 电影 / 剧集 / 集 / **分类** / 源 / 线路 / 播放地址 / 订阅配置 / 空壳
 
 ## MVP 功能范围（精简版）
 

@@ -27,11 +27,7 @@ public class SourceRepo {
 
     public synchronized List<Source> load() {
         String s = sp.getString(KEY, null);
-        if (s == null) {
-            List<Source> def = new ArrayList<>();
-            def.add(new Source("示例源", "https://api.example.com/api.php/provide/vod"));
-            return def;
-        }
+        if (s == null) return new ArrayList<>();
         try {
             List<Source> list = gson.fromJson(s, new TypeToken<List<Source>>() {}.getType());
             return list != null ? list : new ArrayList<>();
