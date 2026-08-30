@@ -10,3 +10,9 @@
 
 - [ ] `SourceAdapter` 接口 + `MaccmsAdapter`/`JsSpiderAdapter` + `SourceFactory` 齐备。
 - [ ] JVM 单测：两适配器返回统一领域模型，`$$$/#/$` 拆解正确。
+
+**评审遗留（/code-review 判断题，本 ticket 重构时一并处理）：**
+- 抽出共享的 SharedPreferences+Gson 存取（`History.Store` / `SourceRepo` 形状重复）。
+- 共享单个 `OkHttpClient`（`Maccms` / `JsSpider` 各自 new）。
+- 删除 `JsSpider.JS_SOURCE` 死静态字段（Speculative Generality）。
+- `Bean` 全 String 字段（Primitive Obsession）——MVP 可接受，仅在顺手处收敛。
