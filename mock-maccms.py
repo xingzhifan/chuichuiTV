@@ -19,6 +19,10 @@ from urllib.parse import urlparse, parse_qs
 
 BAD = "https://invalid.example.com/broken.m3u8"  # 故意打不开，用于观察失败与（将来的）自动换源
 
+MP4_720 = "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-720p.mp4"
+MP4_360 = "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-360p.mp4"
+HLS_DEMO = "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8"
+
 CLASS = [
     {"type_id": "1", "type_name": "电影"},
     {"type_id": "2", "type_name": "剧集"},
@@ -27,36 +31,35 @@ CLASS = [
 VODS = [
     {
         "vod_id": "1",
-        "vod_name": "Big Buck Bunny（测试电影）",
+        "vod_name": "演示电影（测试片）",
         "vod_pic": "",
         "vod_remarks": "测试",
         "type_id": "1",
         "type_name": "电影",
-        "vod_year": "2008",
-        "vod_play_from": "可用HLS$$$坏线路$$$备用MP4",
+        "vod_year": "2024",
+        "vod_play_from": "超清MP4$$$流畅360P$$$坏线路",
         "vod_play_url": (
-            "正片$https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-            "#备用$https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            "$$$"
-            "打不开$" + BAD
+            "正片$" + MP4_720
             + "$$$"
-            + "MP4$https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            + "正片$" + MP4_360
+            + "$$$"
+            + "打不开$" + BAD
         ),
     },
     {
         "vod_id": "2",
-        "vod_name": "Elephants Dream（测试剧集）",
+        "vod_name": "演示剧集（测试）",
         "vod_pic": "",
         "vod_remarks": "共2集",
         "type_id": "2",
         "type_name": "剧集",
-        "vod_year": "2006",
+        "vod_year": "2024",
         "vod_play_from": "HLS$$$坏线路",
         "vod_play_url": (
-            "第01集$https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-            "#第02集$https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-            "$$$"
-            "打不开$" + BAD
+            "第01集$" + HLS_DEMO
+            + "#第02集$" + MP4_360
+            + "$$$"
+            + "打不开$" + BAD
         ),
     },
 ]
