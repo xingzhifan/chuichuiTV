@@ -14,11 +14,19 @@ import java.util.List;
 public class SourceRepo {
     private static final String PREF = "chui_src";
     private static final String KEY = "list";
+    private final Context app;
     private final SharedPreferences sp;
     private final Gson gson = new Gson();
 
     public SourceRepo(Context c) {
-        sp = c.getApplicationContext().getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        app = c.getApplicationContext();
+        sp = app.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+    }
+
+    /** 首个（默认）源的采集 API 地址；未配置时返回空串。 */
+    public synchronized String firstApi() {
+        List<Source> list = load();
+        return list.isEmpty() ? "" : list.get(0).api;
     }
 
     public synchronized void save(List<Source> list) {

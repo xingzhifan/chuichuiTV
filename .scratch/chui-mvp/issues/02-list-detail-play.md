@@ -6,7 +6,7 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] 编译成功；装后点分类→看到片源列表，点片源→详情显示线路/集。
 - [ ] 点某集→ExoPlayer 播放（用真实 m3u8）。

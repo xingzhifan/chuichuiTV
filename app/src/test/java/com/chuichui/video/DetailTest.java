@@ -49,4 +49,21 @@ public class DetailTest {
         assertEquals(1, d.lines.size());
         assertEquals(0, d.lines.get(0).episodes.size());
     }
+
+    @Test
+    public void flattenLabelsEveryEpisodeWithItsLine() {
+        Vod vod = new Vod();
+        vod.vodPlayFrom = "线一$$$线二";
+        vod.vodPlayUrl = "第01集$https://c1/ep1.m3u8#第02集$https://c1/ep2.m3u8$$$第01集$https://c2/ep1.m3u8";
+        Detail d = new Detail(vod);
+
+        java.util.List<Episode> flat = d.flatten();
+
+        assertEquals(3, flat.size());
+        assertEquals("线一 | 第01集", flat.get(0).name);
+        assertEquals("https://c1/ep1.m3u8", flat.get(0).url);
+        assertEquals("线一 | 第02集", flat.get(1).name);
+        assertEquals("线二 | 第01集", flat.get(2).name);
+        assertEquals("https://c2/ep1.m3u8", flat.get(2).url);
+    }
 }

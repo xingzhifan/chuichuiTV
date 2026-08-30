@@ -36,4 +36,15 @@ public class Detail {
             lines.add(line);
         }
     }
+
+    /** 把所有线路的集拉平：Episode.name = "线路 | 集"，url = 播放地址。供详情列表直接展示。 */
+    public List<Episode> flatten() {
+        List<Episode> out = new ArrayList<>();
+        for (Line line : lines) {
+            for (Episode ep : line.episodes) {
+                out.add(new Episode(line.name + " | " + ep.name, ep.url));
+            }
+        }
+        return out;
+    }
 }
