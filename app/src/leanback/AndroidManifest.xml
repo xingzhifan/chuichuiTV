@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- leanback(电视) flavor 专属清单：
+     1) 给 MainActivity 追加 LEANBACK_LAUNCHER 分类（电视桌面入口；与 main 的 LAUNCHER 并存，手机/电视都能启动）；
+     2) 声明 uses-feature leanback required=false（不强制电视特性，手机也可安装）。 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+
+    <application>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

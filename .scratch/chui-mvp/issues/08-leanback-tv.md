@@ -6,7 +6,7 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] `app-leanback-debug.apk` 编译成功。
 - [ ] 装到电视后遥控器 D-pad 可浏览分类并播放。
