@@ -6,6 +6,19 @@
 
 **Blocked by:** 03
 
-**Status:** claimed
+**Status:** resolved（代码+编译+单测已验证；真机搜索待用户实测——需真实采集源，见 ticket 05/10）
 
-- [ ] 关键词搜索→结果列表→点击进详情。
+- [x] 关键词搜索→结果列表→点击进详情。
+
+## Progress
+
+- `ui/SearchScreen.kt`：关键词输入（IME 搜索键/按钮触发）→ 当前选中源 `adapter.search(kw, 1)` → 结果列表（片名+备注）→ 点击进详情。
+- 首页右上「搜索」入口；`MainActivity` search 路由。
+- 竞态防护：新搜索前取消在途 Job（慢旧请求不覆盖新结果）。
+- 空态区分：未配源 / 已搜无结果 / 未搜索 三种提示。
+- 复用共享组件：`ScreenScaffold`（含搜索框 header 插槽）、`ListRow`、`vodLabel`。
+
+## 说明
+
+- 仅搜第 1 页（无翻页/加载更多）→ 已记入 ticket 09 与列表分页一并处理。
+- 旋转屏不丢结果（MainActivity 已声明 configChanges）；进程级恢复不做（MVP）。

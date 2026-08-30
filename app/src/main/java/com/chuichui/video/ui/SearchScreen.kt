@@ -27,7 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Vod
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /** 搜索：输入关键词调用当前选中源搜索，展示结果；点击结果进详情。 */
@@ -39,65 +41,53 @@ fun SearchScreen(onOpenVod: (vodId: String, name: String) -> Unit) {
     var vods by remember { mutableStateOf<List<Vod>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
     var searched by remember { mutableStateOf(false) }
+    val hasSource = remember { SourceRepo(ctx).load().isNotEmpty() }
+    var searchJob by remember { mutableStateOf<Job?>(null) }
 
     fun runSearch() {
         val kw = keyword.trim()
-        if (kw.isEmpty() || loading) return
+        if (kw.isEmpty()) return
+        searchJob?.cancel()   // 取消在途旧请求，防慢结果覆盖新结果
         loading = true
-        scope.launch {
+        searchJob = scope.launch {
             vods = loadFromSource(ctx) { adapter -> adapter.search(kw, 1) }
             loading = false
             searched = true
         }
     }
 
-    Column(Modifier.fillMaxSize()) {
-        Text(
-            "搜索",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(16.dp)
-        )
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = keyword,
-                onValueChange = { keyword = it },
-                label = { Text("片名 / 关键词") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { runSearch() }),
-                modifier = Modifier.weight(1f)
-            )
-            Button(
-                onClick = { runSearch() },
-                modifier = Modifier.padding(start = 8.dp)
-            ) { Text("搜索") }
+    ScreenScaffold(
+        title = "搜索",
+        loading = loading,
+        empty = searched && vods.isEmpty(),
+        emptyText = when {
+            !hasSource -> "未配置可用源\n点首页右上「源」添加"
+            searched -> "无结果"
+            else -> "输入关键词开始搜索"
+        },
+        header = {
+            Row(
+                Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = keyword,
+                    onValueChange = { keyword = it },
+                    label = { Text("关键词") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { runSearch() }),
+                    modifier = Modifier.weight(1f)
+                )
+                Button(
+                    onClick = { runSearch() },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) { Text("搜索") }
+            }
         }
-
-        when {
-            loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("搜索中…", color = Color.Gray)
-            }
-            !searched -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("输入关键词开始搜索", color = Color.Gray)
-            }
-            vods.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("无结果", color = Color.Gray)
-            }
-            else -> LazyColumn(Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 8.dp)) {
-                items(vods) { v ->
-                    val labelText = v.vodName + (if (!v.vodRemarks.isNullOrEmpty()) "  [" + v.vodRemarks + "]" else "")
-                    Text(
-                        labelText,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 14.dp, horizontal = 8.dp)
-                            .clickable { onOpenVod(v.vodId, v.vodName) }
-                    )
-                }
-            }
+    ) {
+        items(vods) { v ->
+            ListRow(vodLabel(v)) { onOpenVod(v.vodId, v.vodName) }
         }
     }
 }
