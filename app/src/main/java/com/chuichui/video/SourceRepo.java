@@ -13,9 +13,11 @@ import java.util.List;
 public class SourceRepo {
 
     private final JsonPref<List<Source>> pref;
+    private final JsonPref<Integer> selPref;
 
     public SourceRepo(Context c) {
         pref = new JsonPref<>(c, "chui_src", "list", new TypeToken<List<Source>>() {});
+        selPref = new JsonPref<>(c, "chui_src", "selected", new TypeToken<Integer>() {});
     }
 
     public synchronized void save(List<Source> list) {
@@ -26,5 +28,15 @@ public class SourceRepo {
     public synchronized List<Source> load() {
         List<Source> list = pref.get();
         return list != null ? list : new ArrayList<>();
+    }
+
+    /** 当前浏览的源索引（首页/搜索用它；故障切换在 ticket 04 扩展到全源）。 */
+    public synchronized int selected() {
+        Integer i = selPref.get();
+        return i == null ? 0 : i;
+    }
+
+    public synchronized void setSelected(int index) {
+        selPref.set(index);
     }
 }

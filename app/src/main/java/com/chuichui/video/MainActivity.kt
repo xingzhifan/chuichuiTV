@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.chuichui.video.ui.Categories
 import com.chuichui.video.ui.DetailScreen
 import com.chuichui.video.ui.PlayScreen
+import com.chuichui.video.ui.SourcesScreen
 import com.chuichui.video.ui.VodListScreen
 
 class MainActivity : ComponentActivity() {
@@ -24,9 +25,16 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = nav, startDestination = "categories") {
 
                     composable("categories") {
-                        Categories(onOpenCategory = { typeId, title ->
-                            nav.navigate("vodList?typeId=${Uri.encode(typeId)}&title=${Uri.encode(title)}")
-                        })
+                        Categories(
+                            onOpenCategory = { typeId, title ->
+                                nav.navigate("vodList?typeId=${Uri.encode(typeId)}&title=${Uri.encode(title)}")
+                            },
+                            onOpenSettings = { nav.navigate("settings") }
+                        )
+                    }
+
+                    composable("settings") {
+                        SourcesScreen(onClose = { nav.popBackStack() })
                     }
 
                     composable(
