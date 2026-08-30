@@ -11,7 +11,9 @@ local.properties
 *.iml
 
 # Vendored / abandoned fork clone (kept on disk as reference, not part of this project)
-chuichui/
+# NOTE: leading slash anchors to repo root — plain "chuichui/" also ignored the
+# com/chuichui Java package directory at any depth (sources were silently untracked).
+/chuichui/
 
 # OS
 .DS_Store
