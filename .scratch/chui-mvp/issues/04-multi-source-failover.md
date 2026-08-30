@@ -6,9 +6,31 @@
 
 **Blocked by:** 03
 
-**Status:** claimed
+**Status:** resolved（代码+编译+单测已验证；真机故障切换场景待用户实测——mock 源已含坏线路）
 
-- [ ] 播放聚合多源候选队列，失败按序切换。
-- [ ] JVM 单测：候选队列优先级排序 + 失败切下一候选 + 失败源降级。
+- [x] 播放聚合多源候选队列，失败按序切换。
+- [x] JVM 单测：候选队列优先级排序 + 失败切下一候选 + 失败源降级。
 
-**评审遗留（ticket-02 /code-review）：** 当前 `Detail.flatten()` 把线路身份压成"线路 | 集"字符串（Primitive Obsession）。故障切换需要线路作为一等结构（哪个源、哪条线路），本 ticket 重构时显式建模（如 PlayCandidate{source, line, url}）。
+## Progress
+
+- `play/PlayCandidate`（候选：源+线路+集+地址）、`play/SourceHealth`（失败计数+markSuccess 恢复+rankIds 排序）、`play/PlayQueue`（markFailedAndAdvance 推进）、`play/PlayCandidates.order`（纯排序：当前线路→当前源其他线路→其他源按健康度→全无同名时逐源兜底；url 去重；集名数字归一匹配）。
+- `play/PlaybackResolver`（IO 聚合）：当前源详情 + 其他源按片名严格搜索详情（并发），SourceHealth.rankIds 排序其他源。
+- `ui/PlayScreen` 重写：`Failover` 控制器（起播失败/12s 看门狗 → markFailedAndAdvance 切下一候选；**READY 后的中途错误不降级**，仅提示播放中断；STATE_READY 即 markSuccess 恢复健康）；状态浮层显示当前候选与耗尽文案。
+- 播放页自动横屏 + 沉浸式；`MainActivity` 旋转不重建。
+- `Detail` 解析时空线路名归一"线路"（修首选线路匹配失效）。
+
+## /code-review 修复（Standards 2 硬违规 + Spec 高危，全部闭环）
+
+- **player 死代码（黑屏）**：Failover 经 onPlayer 回调暴露 ExoPlayer，PlayScreen 绑定 PlayerView。
+- **fail 双触发**：fail()/playCurrent 先清 Handler 回调 + settling 防重入。
+- **READY 后中途错误不再误降级**（区分"起播失败"与"播放中网络抖动"）。
+- 跨源搜索改**严格同名匹配**（消除选错片风险）；集名数字归一匹配（"第01集"≍"01"）+ 单测。
+- `PlayRequest` 打包四参数（Data Clumps）；Resolver 去重 SourceFactory.create。
+- SourceHealthTest（rankIds 排序 + markSuccess 恢复）+ PlayQueueTest 跨源集名归一用例。
+
+## 与 ADR-0003 的差距（显式标注，分期实现）
+
+ADR-0003 承诺的完整抗源失效分层中，本期仅落地：**失败计数降级（进程内、起播成功即恢复）+ 播放期故障切换**。以下仍未做，由后续 ticket 承担：
+- 源健康后台探测（up/down/unknown 主动巡检）→ ticket 09/后续
+- 两级缓存（内存+Room）→ ticket 09/后续
+- 订阅自动刷新 → ticket 10/后续
