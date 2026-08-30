@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.chuichui.video.ui.Categories
 import com.chuichui.video.ui.DetailScreen
 import com.chuichui.video.ui.PlayScreen
+import com.chuichui.video.ui.SearchScreen
 import com.chuichui.video.ui.SourcesScreen
 import com.chuichui.video.ui.VodListScreen
 import com.chuichui.video.play.PlayRequest
@@ -30,12 +31,21 @@ class MainActivity : ComponentActivity() {
                             onOpenCategory = { typeId, title ->
                                 nav.navigate("vodList?typeId=${Uri.encode(typeId)}&title=${Uri.encode(title)}")
                             },
+                            onOpenSearch = { nav.navigate("search") },
                             onOpenSettings = { nav.navigate("settings") }
                         )
                     }
 
                     composable("settings") {
                         SourcesScreen(onClose = { nav.popBackStack() })
+                    }
+
+                    composable("search") {
+                        SearchScreen(
+                            onOpenVod = { vodId, name ->
+                                nav.navigate("detail?vodId=${Uri.encode(vodId)}&title=${Uri.encode(name)}")
+                            }
+                        )
                     }
 
                     composable(

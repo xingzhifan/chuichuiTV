@@ -6,6 +6,6 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] 关键词搜索→结果列表→点击进详情。

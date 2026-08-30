@@ -31,10 +31,11 @@ import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Category
 
-/** 分类首页：源选择器（多源并存，按稳定 id 切换）+ 当前源的分类列表；右上「源」进入源管理。 */
+/** 分类首页：源选择器（多源并存）+ 当前源的分类列表；右上「搜索」与「源」入口。 */
 @Composable
 fun Categories(
     onOpenCategory: (typeId: String, title: String) -> Unit,
+    onOpenSearch: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
     val ctx = LocalContext.current
@@ -60,6 +61,12 @@ fun Categories(
         empty = categories.isEmpty(),
         emptyText = "未配置可用源\n点右上「源」添加采集源",
         actions = {
+            Text(
+                "搜索",
+                modifier = Modifier
+                    .clickable { onOpenSearch() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            )
             Text(
                 "源",
                 modifier = Modifier
