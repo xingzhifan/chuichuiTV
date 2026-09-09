@@ -4,7 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,14 +20,22 @@ import com.chuichui.video.ui.SearchScreen
 import com.chuichui.video.ui.SourcesScreen
 import com.chuichui.video.ui.VodListScreen
 import com.chuichui.video.play.PlayRequest
+import com.chuichui.video.ui.theme.ChuiChuiTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            ChuiChuiTheme {
                 val nav = rememberNavController()
-                NavHost(navController = nav, startDestination = "categories") {
+                NavHost(
+                    navController = nav,
+                    startDestination = "categories",
+                    enterTransition = { fadeIn(animationSpec = tween(220)) },
+                    exitTransition = { fadeOut(animationSpec = tween(180)) },
+                    popEnterTransition = { fadeIn(animationSpec = tween(220)) },
+                    popExitTransition = { fadeOut(animationSpec = tween(180)) },
+                ) {
 
                     composable("categories") {
                         Categories(

@@ -1,13 +1,20 @@
 package com.chuichui.video.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,13 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Vod
+import com.chuichui.video.ui.theme.TextSecondary
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-/** 搜索：输入关键词调用当前选中源搜索，结果滚动到底自动翻页；点击结果进详情。 */
+/** 搜索：输入关键词调用当前选中源搜索，结果海报网格 + 滚动到底自动翻页；点击结果进详情。 */
 @Composable
 fun SearchScreen(onOpenVod: (vodId: String, name: String) -> Unit) {
     val ctx = LocalContext.current
@@ -39,12 +48,12 @@ fun SearchScreen(onOpenVod: (vodId: String, name: String) -> Unit) {
     var searched by remember { mutableStateOf(false) }
     val hasSource = remember { SourceRepo(ctx).load().isNotEmpty() }
     var searchJob by remember { mutableStateOf<Job?>(null) }
-    val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
 
     fun runSearch() {
         val kw = keyword.trim()
         if (kw.isEmpty()) return
-        searchJob?.cancel()   // 取消在途旧请求，防慢结果覆盖新结果
+        searchJob?.cancel()
         loading = true
         page = 1
         searchJob = scope.launch {
@@ -71,43 +80,59 @@ fun SearchScreen(onOpenVod: (vodId: String, name: String) -> Unit) {
         }
     }
 
-    // 滚动到底部附近触发翻页。
-    AutoLoadMore(listState, shouldLoad = { hasMore && !loading }, onLoadMore = { loadNext() })
+    AutoLoadMoreGrid(gridState, shouldLoad = { hasMore && !loading }, onLoadMore = { loadNext() })
 
-    ScreenScaffold(
-        title = "搜索",
-        loading = loading && vods.isEmpty(),
-        empty = searched && vods.isEmpty(),
-        emptyText = when {
-            !hasSource -> "未配置可用源\n点首页右上「源」添加"
-            searched -> "无结果"
-            else -> "输入关键词开始搜索"
-        },
-        listState = listState,
-        bottom = { if (loading && vods.isNotEmpty()) LoadMoreRow() },
-        header = {
-            Row(
-                Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = keyword,
-                    onValueChange = { keyword = it },
-                    label = { Text("关键词") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { runSearch() }),
-                    modifier = Modifier.weight(1f)
-                )
-                Button(
-                    onClick = { runSearch() },
-                    modifier = Modifier.padding(start = 8.dp)
-                ) { Text("搜索") }
-            }
+    Column(Modifier.fillMaxSize()) {
+        ScreenTopBar("搜索")
+        Row(
+            Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = keyword,
+                onValueChange = { keyword = it },
+                label = { Text("关键词") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { runSearch() }),
+                modifier = Modifier.weight(1f)
+            )
+            Button(
+                onClick = { runSearch() },
+                modifier = Modifier.padding(start = 8.dp)
+            ) { Text("搜索") }
         }
-    ) {
-        items(vods) { v ->
-            ListRow(vodLabel(v)) { onOpenVod(v.vodId, v.vodName) }
+
+        when {
+            loading && vods.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("加载中…", color = TextSecondary)
+            }
+            searched && vods.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("无结果", color = TextSecondary, textAlign = TextAlign.Center)
+            }
+            !searched -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    if (hasSource) "输入关键词开始搜索" else "未配置可用源\n点首页右上「源」添加",
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            else -> LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 110.dp),
+                state = gridState,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
+            ) {
+                items(vods, key = { it.vodId }) { v ->
+                    PosterCard(
+                        vod = v,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp)
+                            .clickable { onOpenVod(v.vodId, v.vodName) },
+                    )
+                }
+                if (loading) item { LoadMoreRow() }
+            }
         }
     }
 }

@@ -6,14 +6,15 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -23,19 +24,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Category
+import com.chuichui.video.ui.theme.AccentBlue
+import com.chuichui.video.ui.theme.AccentPurple
+import com.chuichui.video.ui.theme.SurfaceHigh
+import com.chuichui.video.ui.theme.TextSecondary
 
-/** 分类首页：源选择器（多源并存）+ 当前源的分类列表；右上「搜索」「历史」「源」入口。 */
+/** 分类首页：源选择器（多源并存）+ 当前源的分类网格；右上「搜索」「历史」「源」入口。 */
 @Composable
 fun Categories(
     onOpenCategory: (typeId: String, title: String) -> Unit,
@@ -50,7 +55,6 @@ fun Categories(
     var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
-    // 显式重读 repo：从源管理页返回（或切换选中）时，选择器与列表都反映最新状态。
     LaunchedEffect(selectedId) {
         sources = repo.load()
         if (sources.none { it.id == selectedId }) selectedId = sources.firstOrNull()?.id ?: ""
@@ -60,159 +64,123 @@ fun Categories(
         loading = false
     }
 
-    ScreenScaffold(
-        title = "锤锤影视",
-        loading = loading,
-        empty = categories.isEmpty(),
-        emptyText = "未配置可用源\n点右上「源」添加采集源",
-        actions = {
-            Text(
-                "搜索",
-                modifier = Modifier
-                    .clickable { onOpenSearch() }
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-            Text(
-                "历史",
-                modifier = Modifier
-                    .clickable { onOpenHistory() }
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-            Text(
-                "源",
-                modifier = Modifier
-                    .clickable { onOpenSettings() }
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-        },
-        header = {
-            if (sources.size > 1) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(start = 12.dp, end = 12.dp, bottom = 4.dp)
-                ) {
-                    sources.forEachIndexed { idx, s ->
-                        SelectChip(
-                            text = s.name,
-                            selected = s.id == selectedId,
-                            onClick = {
-                                repo.setSelectedId(s.id)
-                                selectedId = s.id
-                            }
-                        )
-                    }
+    Column(Modifier.fillMaxSize()) {
+        // 顶栏：标题 + 右上入口
+        ScreenTopBar("锤锤影视") {
+            TopAction("搜索") { onOpenSearch() }
+            TopAction("历史") { onOpenHistory() }
+            TopAction("源") { onOpenSettings() }
+        }
+
+        // 多源时的源选择器
+        if (sources.size > 1) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(start = 12.dp, end = 12.dp, bottom = 6.dp)
+            ) {
+                sources.forEach { s ->
+                    SourceChip(
+                        text = s.name,
+                        selected = s.id == selectedId,
+                        onClick = {
+                            repo.setSelectedId(s.id)
+                            selectedId = s.id
+                        }
+                    )
                 }
             }
         }
-    ) {
-        items(categories) { c ->
-            ListRow(c.typeName) { onOpenCategory(c.typeId, c.typeName) }
-        }
-    }
-}
 
-/** 通用列表骨架：标题(+动作/头部插槽) + 加载/空态 + 内容槽。 */
-@Composable
-internal fun ScreenScaffold(
-    title: String,
-    loading: Boolean,
-    empty: Boolean,
-    emptyText: String,
-    actions: (@Composable () -> Unit)? = null,
-    header: (@Composable () -> Unit)? = null,
-    listState: LazyListState = rememberLazyListState(),
-    bottom: (@Composable () -> Unit)? = null,
-    content: LazyListScope.() -> Unit,
-) {
-    Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-            actions?.invoke()
+        Box(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Text(
+                if (sources.size > 1) "分类" else "浏览",
+                style = MaterialTheme.typography.titleMedium,
+                color = TextSecondary,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
         }
-        header?.invoke()
+
         when {
             loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("加载中…", color = Color.Gray)
+                Text("加载中…", color = TextSecondary)
             }
-            empty -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(emptyText, color = Color.Gray, textAlign = TextAlign.Center)
-            }
-            else -> LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            categories.isEmpty() -> Box(
+                Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
-                content()
-                if (bottom != null) item { bottom() }
+                Text(
+                    "未配置可用源\n点右上「源」添加采集源",
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            else -> LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 128.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                items(categories, key = { it.typeId }) { c ->
+                    CategoryTile(c.typeName) { onOpenCategory(c.typeId, c.typeName) }
+                }
             }
         }
     }
 }
 
-/** 共享选择 Chip：高亮当前项（源选择器 / 类型切换复用）。 */
+/** 顶栏动作文字（搜索/历史/源），点击反馈 + 主题色。 */
 @Composable
-internal fun SelectChip(text: String, selected: Boolean, onClick: () -> Unit) {
+private fun TopAction(text: String, onClick: () -> Unit) {
     Text(
         text,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+    )
+}
+
+/** 源选择 chip：选中时蓝紫渐变高亮。 */
+@Composable
+private fun SourceChip(text: String, selected: Boolean, onClick: () -> Unit) {
+    val bg = if (selected) {
+        Brush.horizontalGradient(listOf(AccentPurple, AccentBlue))
+    } else {
+        Brush.horizontalGradient(listOf(SurfaceHigh, SurfaceHigh))
+    }
+    Text(
+        text,
+        style = MaterialTheme.typography.labelMedium,
+        color = if (selected) Color.White else TextSecondary,
         modifier = Modifier
             .padding(end = 8.dp)
-            .background(
-                if (selected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surfaceVariant
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .clickable { onClick() }
+            .clip(RoundedCornerShape(8.dp))
+            .background(bg)
+            .padding(horizontal = 14.dp, vertical = 7.dp)
+            .clickable { onClick() },
     )
 }
 
-/** 列表行：可点击（宽度撑满、高度自适应）。 */
+/** 分类瓦片：可点击的圆角卡片，上方渐变竖条 + 居中分类名。 */
 @Composable
-internal fun ListRow(text: String, onClick: () -> Unit) {
-    Text(
-        text,
-        modifier = Modifier
+private fun CategoryTile(name: String, onClick: () -> Unit) {
+    Column(
+        Modifier
             .fillMaxWidth()
-            .padding(vertical = 14.dp, horizontal = 8.dp)
+            .padding(6.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(SurfaceHigh)
             .clickable { onClick() }
-    )
-}
-
-/** 列表底部「加载更多」提示。 */
-@Composable
-internal fun LoadMoreRow() {
-    Box(
-        Modifier.fillMaxWidth().padding(vertical = 14.dp),
-        contentAlignment = Alignment.Center
+            .padding(vertical = 20.dp, horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("加载中…", color = Color.Gray)
-    }
-}
-
-/**
- * 滚动到底部附近时触发翻页。用最后可见项 index 接近列表长度判断"到底"，
- * 并在 shouldLoad() 为真时才调用 onLoadMore()（调用方自行保证防重入）。
- */
-@Composable
-internal fun AutoLoadMore(
-    listState: LazyListState,
-    shouldLoad: () -> Boolean,
-    onLoadMore: suspend () -> Unit,
-) {
-    val onLoadMoreState by rememberUpdatedState(onLoadMore)
-    val shouldLoadState by rememberUpdatedState(shouldLoad)
-    LaunchedEffect(listState) {
-        snapshotFlow {
-            val info = listState.layoutInfo
-            val last = info.visibleItemsInfo.lastOrNull()?.index ?: -1
-            last to info.totalItemsCount
-        }.collect { (last, total) ->
-            if (total > 0 && last >= total - 3 && shouldLoadState()) onLoadMoreState()
-        }
+        AccentBar(Modifier.width(28.dp).height(3.dp))
+        Spacer(Modifier.height(10.dp))
+        Text(
+            name,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
     }
 }
