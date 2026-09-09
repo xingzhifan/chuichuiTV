@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Source
+import com.chuichui.video.category.CategoryBlockerRepo
+import com.chuichui.video.category.CategoryFilter
 import com.chuichui.video.subscription.SubscriptionFetcher
 import com.chuichui.video.subscription.SubscriptionImporter
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +50,7 @@ fun SourcesScreen(onClose: () -> Unit) {
     var api by remember { mutableStateOf("") }
     var isJs by remember { mutableStateOf(false) }
     var showImport by remember { mutableStateOf(false) }
+    var showAllowTerms by remember { mutableStateOf(false) }
 
     fun persist(list: List<Source>, selId: String) {
         repo.save(list)
@@ -61,6 +64,11 @@ fun SourcesScreen(onClose: () -> Unit) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("源管理", style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+            Text(
+                "分类屏蔽",
+                modifier = Modifier.clickable { showAllowTerms = true }.padding(8.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
             Text(
                 "批量导入",
                 modifier = Modifier.clickable { showImport = true }.padding(8.dp),
@@ -151,6 +159,17 @@ fun SourcesScreen(onClose: () -> Unit) {
             }
         )
     }
+
+    if (showAllowTerms) {
+        AllowTermsDialog(
+            initial = remember { CategoryBlockerRepo(ctx).load() },
+            onDismiss = { showAllowTerms = false },
+            onSaved = { terms ->
+                CategoryBlockerRepo(ctx).save(terms)
+                showAllowTerms = false
+            },
+        )
+    }
 }
 
 /** 批量导入对话框：粘贴 JSON 或填订阅 URL 二选一，按 api 去重，可选覆盖/追加。 */
@@ -239,4 +258,57 @@ private fun buildReport(r: SubscriptionImporter.Result): String {
     if (r.skippedDupes > 0) extra.append("，跳过重复 ").append(r.skippedDupes)
     if (r.invalid > 0) extra.append("，忽略无效 ").append(r.invalid)
     return "成功：$extra"
+}
+
+/** 分类屏蔽（白名单）编辑对话框：多行文本框每行一词 + 恢复默认。 */
+@Composable
+private fun AllowTermsDialog(
+    initial: List<String>,
+    onDismiss: () -> Unit,
+    onSaved: (List<String>) -> Unit,
+) {
+    var text by remember { mutableStateOf(initial.joinToString("\n")) }
+    var warnEmpty by remember { mutableStateOf(false) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("分类屏蔽（白名单）") },
+        text = {
+            Column {
+                Text(
+                    "每行一个分类词，只显示命中这些词的分类；空词表将隐藏全部分类。",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                )
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it; if (warnEmpty && it.isNotBlank()) warnEmpty = false },
+                    label = { Text("允许的分类词") },
+                    minLines = 6,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                )
+                if (warnEmpty) {
+                    Text(
+                        "词表为空将隐藏全部分类",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val terms = text.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
+                if (terms.isEmpty()) warnEmpty = true else onSaved(terms)
+            }) { Text("保存") }
+        },
+        dismissButton = {
+            Row {
+                TextButton(onClick = {
+                    text = CategoryFilter.DEFAULT_TERMS.joinToString("\n")
+                    warnEmpty = false
+                }) { Text("恢复默认") }
+                TextButton(onClick = onDismiss) { Text("取消") }
+            }
+        },
+    )
 }
