@@ -1,0 +1,9 @@
+﻿{
+  "data": [
+    {"id": 1, "name": "新极品资源站", "api": "https://jipinvip1.com/api.php/provide/vod/", "rating": 4.8, "responseTime": 693, "status": "ok", "health": {"is_alive": true}},
+    {"id": 2, "name": "360资源站", "api": "https://360zy.com/api.php/provide/vod", "rating": 4.5, "responseTime": 952, "status": "ok", "health": {"is_alive": true}},
+    {"id": 3, "name": "老色X资源站", "api": "https://apilsbzy1.com/api.php/provide/vod/", "rating": 4.2, "responseTime": 393, "status": "ok", "health": {"is_alive": true}},
+    {"id": 4, "name": "无限资源站", "api": "https://api.wujinapi.me/api.php/provide/vod/", "rating": 4.5, "responseTime": 354, "status": "ok", "health": {"is_alive": true}},
+    {"id": 5, "name": "已死资源站", "api": "https://dead.example.com/api.php/provide/vod/", "rating": 4.3, "responseTime": 100, "status": "down", "health": {"is_alive": false}}
+  ]
+}
