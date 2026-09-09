@@ -4,6 +4,8 @@ package com.chuichui.video.bean;
 public class Category {
     public String typeId;
     public String typeName;
+    /** 父分类 id（苹果 CMS class[].type_pid）；无 pid 的源（平铺）为 0。 */
+    public long typePid;
 
     public Category() {
     }

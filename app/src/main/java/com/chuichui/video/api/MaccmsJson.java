@@ -23,9 +23,21 @@ public final class MaccmsJson {
         JsonArray a = obj.has("class") ? obj.getAsJsonArray("class") : new JsonArray();
         for (JsonElement e : a) {
             JsonObject c = e.getAsJsonObject();
-            out.add(new Category(str(c, "type_id"), str(c, "type_name")));
+            Category cat = new Category(str(c, "type_id"), str(c, "type_name"));
+            cat.typePid = pidOf(c);
+            out.add(cat);
         }
         return out;
+    }
+
+    /** type_pid 解析：缺省/null/非数字一律 0。 */
+    private static long pidOf(JsonObject o) {
+        if (!o.has("type_pid") || o.get("type_pid").isJsonNull()) return 0L;
+        try {
+            return Long.parseLong(o.get("type_pid").getAsString());
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
     }
 
     /** list[] → 片源列表。 */

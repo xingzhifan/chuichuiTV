@@ -35,6 +35,23 @@ public class MaccmsJsonTest {
         assertEquals("1", out.get(0).typeId);
         assertEquals("电影", out.get(0).typeName);
         assertEquals("剧集", out.get(1).typeName);
+        assertEquals(0L, out.get(0).typePid);
+    }
+
+    @Test
+    public void parsesCategoriesWithTypePid() {
+        String json = "{\"class\":["
+                + "{\"type_id\":\"1\",\"type_name\":\"电影\"},"
+                + "{\"type_id\":\"7\",\"type_name\":\"动作片\",\"type_pid\":\"1\"},"
+                + "{\"type_id\":\"9\",\"type_name\":\"成人\",\"type_pid\":\"0\"}]}";
+        List<Category> out = MaccmsJson.categories(JsonParser.parseString(json).getAsJsonObject());
+        assertEquals(3, out.size());
+        assertEquals("电影", out.get(0).typeName);
+        assertEquals(0L, out.get(0).typePid);
+        assertEquals("动作片", out.get(1).typeName);
+        assertEquals(1L, out.get(1).typePid);
+        assertEquals("成人", out.get(2).typeName);
+        assertEquals(0L, out.get(2).typePid);
     }
 
     @Test
