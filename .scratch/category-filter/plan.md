@@ -139,7 +139,7 @@ public class CategoryFilterTest {
     @Test
     public void isAllowedBasic() {
         assertTrue(CategoryFilter.isAllowed("动作片", TERMS));
-        assertTrue(CategoryFilter.isAllowed("动作", TERMS));          // 包含即命中
+        assertTrue(CategoryFilter.isAllowed("动作片", Arrays.asList("动作"))); // typeName 包含词表子词即命中
         assertTrue(CategoryFilter.isAllowed("MARTIAL ARTS", Arrays.asList("martial"))); // 忽略大小写
         assertFalse(CategoryFilter.isAllowed("成人", TERMS));
         assertFalse(CategoryFilter.isAllowed("综艺", TERMS));
@@ -151,7 +151,7 @@ public class CategoryFilterTest {
         assertTrue("typeName null 放行", CategoryFilter.isAllowed(null, TERMS));
         assertTrue("terms null 放行", CategoryFilter.isAllowed("成人", null));
         assertFalse("空词表=全隐藏", CategoryFilter.isAllowed("动作片", Collections.<String>emptyList()));
-        assertTrue("terms 中空白词跳过", CategoryFilter.isAllowed("动作片", Arrays.asList("", "  ")));
+        assertFalse("全空白词=不命中", CategoryFilter.isAllowed("动作片", Arrays.asList("", "  ")));
     }
 
     @Test
@@ -182,14 +182,13 @@ public class CategoryFilterTest {
     }
 
     @Test
-    public void buildGroupsParentMatchAllowsLeaf() {
-        // 叶子名不在词表、但父名命中 → 放行
+    public void buildGroupsParentMatchDoesNotAllowLeaf() {
+        // 父「电影」命中词表，但叶子「极限运动」未命中 → 叶子被剔除（父级不参与叶子匹配）
         List<Category> raw = Arrays.asList(
                 cat("1", "电影", 0),
                 cat("7", "极限运动", 1));
         List<CategoryGroup> groups = CategoryFilter.buildGroups(raw, Collections.singletonList("电影"));
-        assertEquals(1, groups.size());
-        assertEquals("极限运动", groups.get(0).categories.get(0).typeName);
+        assertTrue(groups.isEmpty());
     }
 
     @Test
@@ -279,7 +278,8 @@ import java.util.Set;
  * 分组规则：
  * - 无 pid 结构的源（全部 typePid==0，如天涯）→ 平铺单组（title=null），逐分类过白名单；
  * - 有 pid 结构的源 → 叶子（typePid>0）按父级分组（组标题=父分类名）；
- *   叶子或其父任一命中白名单即放行叶子；父级无放行叶子则整组剔除；
+ *   叶子**仅按自身 typeName** 命中白名单即放行（父级不参与叶子匹配，避免词表命中父级时放行其下敏感分类）；
+ *   父级无放行叶子则整组剔除；
  *   父亲不在列表的叶子、以及有 pid 结构中孤立的 pid==0 分类 → 归入若干 null 标题组放在最后（按 raw 顺序）。
  */
 public final class CategoryFilter {
@@ -341,8 +341,7 @@ public final class CategoryFilter {
         for (Category c : raw) {
             if (c.typePid > 0) {
                 Category parent = byId.get(c.typePid);
-                boolean allow = isAllowed(c.typeName, allowTerms)
-                        || (parent != null && isAllowed(parent.typeName, allowTerms));
+                boolean allow = isAllowed(c.typeName, allowTerms);
                 if (!allow) continue;
                 if (parent == null) {
                     isolated.add(c);
