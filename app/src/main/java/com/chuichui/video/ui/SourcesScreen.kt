@@ -298,7 +298,8 @@ private fun AllowTermsDialog(
         confirmButton = {
             TextButton(onClick = {
                 val terms = text.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
-                if (terms.isEmpty()) warnEmpty = true else onSaved(terms)
+                if (terms.isEmpty()) warnEmpty = true
+                onSaved(terms)
             }) { Text("保存") }
         },
         dismissButton = {
