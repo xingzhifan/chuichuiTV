@@ -29,7 +29,7 @@ public final class CategoryFilter {
     private CategoryFilter() {
     }
 
-    /** 内置默认白名单：一级兼容词（供平铺源/父级匹配）+ 常见影视叶子类目。 */
+    /** 内置默认白名单：一级兼容词（供平铺源的白名单匹配）+ 常见影视叶子类目。 */
     public static final List<String> DEFAULT_TERMS = Arrays.asList(
             "电影", "电视剧", "动漫", "综艺",
             "动作片", "喜剧片", "爱情片", "科幻片", "奇幻片", "冒险片",
