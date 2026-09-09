@@ -29,7 +29,7 @@ public class CategoryFilterTest {
     @Test
     public void isAllowedBasic() {
         assertTrue(CategoryFilter.isAllowed("动作片", TERMS));
-        assertTrue(CategoryFilter.isAllowed("动作", TERMS));          // 包含即命中
+        assertTrue(CategoryFilter.isAllowed("动作片", Arrays.asList("动作")));          // 包含即命中
         assertTrue(CategoryFilter.isAllowed("MARTIAL ARTS", Arrays.asList("martial"))); // 忽略大小写
         assertFalse(CategoryFilter.isAllowed("成人", TERMS));
         assertFalse(CategoryFilter.isAllowed("综艺", TERMS));
@@ -41,7 +41,7 @@ public class CategoryFilterTest {
         assertTrue("typeName null 放行", CategoryFilter.isAllowed(null, TERMS));
         assertTrue("terms null 放行", CategoryFilter.isAllowed("成人", null));
         assertFalse("空词表=全隐藏", CategoryFilter.isAllowed("动作片", Collections.<String>emptyList()));
-        assertTrue("terms 中空白词跳过", CategoryFilter.isAllowed("动作片", Arrays.asList("", "  ")));
+        assertFalse("全空白词=不命中", CategoryFilter.isAllowed("动作片", Arrays.asList("", "  ")));
     }
 
     @Test
@@ -72,14 +72,13 @@ public class CategoryFilterTest {
     }
 
     @Test
-    public void buildGroupsParentMatchAllowsLeaf() {
-        // 叶子名不在词表、但父名命中 → 放行
+    public void buildGroupsParentMatchDoesNotAllowLeaf() {
+        // 父「电影」命中词表，但叶子「极限运动」未命中 → 叶子被剔除（父级不参与叶子匹配）
         List<Category> raw = Arrays.asList(
                 cat("1", "电影", 0),
                 cat("7", "极限运动", 1));
         List<CategoryGroup> groups = CategoryFilter.buildGroups(raw, Collections.singletonList("电影"));
-        assertEquals(1, groups.size());
-        assertEquals("极限运动", groups.get(0).categories.get(0).typeName);
+        assertTrue(groups.isEmpty());
     }
 
     @Test

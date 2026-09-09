@@ -21,7 +21,7 @@ import java.util.Set;
  * 分组规则：
  * - 无 pid 结构的源（全部 typePid==0，如天涯）→ 平铺单组（title=null），逐分类过白名单；
  * - 有 pid 结构的源 → 叶子（typePid>0）按父级分组（组标题=父分类名）；
- *   叶子或其父任一命中白名单即放行叶子；父级无放行叶子则整组剔除；
+ *   叶子仅按自身 typeName 命中即放行；父级不参与叶子匹配；
  *   父亲不在列表的叶子、以及有 pid 结构中孤立的 pid==0 分类 → 归入若干 null 标题组放在最后（按 raw 顺序）。
  */
 public final class CategoryFilter {
@@ -83,8 +83,7 @@ public final class CategoryFilter {
         for (Category c : raw) {
             if (c.typePid > 0) {
                 Category parent = byId.get(String.valueOf(c.typePid));
-                boolean allow = isAllowed(c.typeName, allowTerms)
-                        || (parent != null && isAllowed(parent.typeName, allowTerms));
+                boolean allow = isAllowed(c.typeName, allowTerms);
                 if (!allow) continue;
                 if (parent == null) {
                     isolated.add(c);
