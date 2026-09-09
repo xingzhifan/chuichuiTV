@@ -718,7 +718,8 @@ private fun AllowTermsDialog(
         confirmButton = {
             TextButton(onClick = {
                 val terms = text.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
-                if (terms.isEmpty()) warnEmpty = true else onSaved(terms)
+                if (terms.isEmpty()) warnEmpty = true
+                onSaved(terms) // 空列表照常保存 = 「清空全部 → 全隐藏」（与任务 3 repo 语义一致）；红色提示仅警示、不拦截
             }) { Text("保存") }
         },
         dismissButton = {
