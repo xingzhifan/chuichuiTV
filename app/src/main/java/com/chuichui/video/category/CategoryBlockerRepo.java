@@ -20,10 +20,12 @@ public class CategoryBlockerRepo {
     /** 当前生效词表；从未保存过 → 内置默认词表（等价「恢复默认」）。 */
     public synchronized List<String> load() {
         List<String> v = pref.get();
-        return v != null ? v : new ArrayList<>(CategoryFilter.DEFAULT_TERMS);
+        return v != null ? new ArrayList<>(v) : new ArrayList<>(CategoryFilter.DEFAULT_TERMS);
     }
 
+    /** 保存词表：null 不写（防脏数据）；空列表照常写入（=「清空全部 → 全隐藏」的合法语义）。 */
     public synchronized void save(List<String> terms) {
+        if (terms == null) return;
         pref.set(terms);
     }
 }
