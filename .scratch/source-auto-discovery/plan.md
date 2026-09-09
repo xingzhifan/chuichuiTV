@@ -158,6 +158,7 @@ param(
     [switch]$NoMain
 )
 $ErrorActionPreference = "Stop"
+if ($SkipProbe) { $env:SKIP_PROBE = "1" }
 $listPath = if ($env:SOURCE_LIST) { $env:SOURCE_LIST } else { "sources.json" }
 $statePath = if ($env:IMPORT_STATE) { $env:IMPORT_STATE } else { ".source-import-state.json" }
 $timeoutSec = if ($env:HTTP_TIMEOUT_SEC) { [int]$env:HTTP_TIMEOUT_SEC } else { 12 }
@@ -260,7 +261,7 @@ Assert ($merged.Count -eq 5) "expected 5 (3 existing + 2 new)"
 $sorted = @($merged | ForEach-Object { $_.api })
 Assert ($sorted[0] -eq "https://jipinvip1.com/api.php/provide/vod") "sort rating desc: 4.8 first"
 Assert ($sorted[1] -eq "https://api.wujinapi.me/api.php/provide/vod" -and $sorted[2] -eq "https://360zy.com/api.php/provide/vod") "tie on rating 4.5 sorted by resp asc (354 < 952)"
-Assert ($sorted[4] -eq "http://cj.lziapi.com/api.php/provide/vod") "existing source without upstream data last"
+Assert ($sorted[4] -eq "http://cj.lziapi.com/api.php/provide/vod/") "existing source without upstream data last (original api preserved)"
 
 # ---- task 3b: cooldown machine ----
 $st2 = @{ removed = @{ "https://dead.ex.com/api.php/provide/vod" = @{ removedAt = "2026-09-01"; onlineStreak = 2 } } }
@@ -284,8 +285,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tests\source-import.tests.ps
 - [ ] **步骤 4：写主流程函数**（追加到 `source-import.ps1` 函数区，`-NoMain` 保护段之前）：
 
 ```powershell
-function Wait-Nothing {}   # no-op, keeps function block balanced
-
 function Write-Sources([array]$list, [string]$path) {
     $arr = @($list | ForEach-Object { @{ name = $_.name; api = $_.api; type = "maccms" } })
     $json = $arr | ConvertTo-Json -Depth 4
@@ -328,7 +327,7 @@ function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, [hashtable]$s
         if ($existingMap.ContainsKey($canon) -or $seen.ContainsKey($canon)) { Write-Output "SKIP-DUP: $($e.name)"; continue }
         $cd = Invoke-CooldownStep $state $canon
         if ($cd.reAdd -eq $false) {
-            Write-Output "COOLING: $($e.name) (streak $($cd.onlineStreak)/$COOLING_DAYS)"
+            Write-Host "COOLING: $($e.name) (streak $($cd.onlineStreak)/$COOLING_DAYS)"
             # persist streak bump back into state
             $rec = $state.removed.$canon
             $rec.onlineStreak = $cd.onlineStreak
@@ -336,9 +335,9 @@ function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, [hashtable]$s
         }
         if (-not (Test-AcListAlive $e.api $probeTimeoutSec)) { Write-Output "SKIP-UNRESPONSIVE: $($e.name)"; continue }
         $seen[$canon] = $true
-        Write-Output "NEW: $($e.name) ($canon)"
+        Write-Host "NEW: $($e.name) ($canon)"
         [void]$out.Add(@{
-            name = $e.name; api = $e.api; type = "maccms"
+            name = $e.name; api = (Get-CanonicalApi $e.api); type = "maccms"
             rating = [double]$e.rating; resp = [int]$e.responseTime
         })
     }
@@ -414,29 +413,42 @@ if ($dead.Count -gt 0) {
     $state = if (Test-Path $statePath) { (Get-Content $statePath -Raw | ConvertFrom-Json) } else { @{ removed = @{} } }
     if ($null -eq $state.removed) { $state.removed = @{} }
     foreach ($s in $dead) {
-        $key = $s.api.TrimEnd('/').ToLowerInvariant()
+        # key 规范化与 source-import.ps1 的 Get-CanonicalApi 保持一致（http→https / 去尾斜杠 / 小写）
+        $key = $s.api.Trim()
+        if ($key -match '^http://') { $key = "https://" + $key.Substring(7) }
+        $key = $key.TrimEnd('/').ToLowerInvariant()
         $rec = New-Object PSObject -Property @{ removedAt = (Get-Date -Format "yyyy-MM-dd"); onlineStreak = 0 }
         $state.removed | Add-Member -Name $key -Value $rec -MemberType NoteProperty -Force
         Write-Output "REMOVED-STATE: $($s.name) -> $key"
     }
-    [System.IO.File]::WriteAllText((Resolve-Path $statePath), ($state | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))
+    $stateFull = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $statePath))
+    [System.IO.File]::WriteAllText($stateFull, ($state | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))
 }
 ```
 
-- [ ] **步骤 2：本机模拟一次剔除路径**（不动真清单）
+- [ ] **步骤 2：隔离验证剔除记录路径**（不改动真实清单）
+
+在临时目录构造一份含一条必然失效假端点的清单，让 `dead.Count>0` 分支真正被触发：
 
 ```powershell
-$env:IMPORT_STATE = ".\tmp-state-test.json"
-Remove-Item -Force .\tmp-state-test.json -ErrorAction SilentlyContinue
-```
-然后临时伪造一条死源探活（只跑 form 验证末尾记录写入逻辑不可行 → 改用手工调用函数方式验证较繁）。**替代验证**：直接 `Set-Content` 一个 `tmp-probe.json` 含两备好探活端点不可靠，故改为**构造最小回归**：用当前真实 `sources.json` 跑 `probe-sources.ps1`，确认其照常 `ALIVE/DEAD`，且当第二轮有死源时 `REMOVED-STATE` 输出出现。
-
-> 说明：CI 场景必然出现（上游持续变更），本地不强行制造死源。本步骤验收=脚本可运行 + 新代码不干扰原逻辑：
-
-```bash
+New-Item -ItemType Directory -Force -Path .\tmp-probe-isolated | Out-Null
+Set-Content -Path .\tmp-probe-isolated\list.json -Encoding UTF8 @'
+[{"name":"必然死源","api":"https://dead.example.com/api.php/provide/vod","type":"maccms"}]
+'@
+$env:SOURCE_LIST = "$(Resolve-Path .\tmp-probe-isolated)\list.json"
+$env:IMPORT_STATE = "$(Resolve-Path .\tmp-probe-isolated)\state.json"
+$env:HTTP_TIMEOUT_SEC = "3"   # 快速失败，避免 12s 等待
 powershell -NoProfile -ExecutionPolicy Bypass -File probe-sources.ps1
+Remove-Item Env:SOURCE_LIST, Env:IMPORT_STATE, Env:HTTP_TIMEOUT_SEC -ErrorAction SilentlyContinue
+Get-Content "$(Resolve-Path .\tmp-probe-isolated)\state.json"
+Remove-Item -Recurse -Force .\tmp-probe-isolated
 ```
-预期：输出若干 `ALIVE:` 与 `SUMMARY: total=… alive=… dead=…`；无异常。若其探测的网络当前均在线，`dead=0` 正常，不写 state 也正常（`dead.Count -gt 0` 保护）。
+
+预期：`DEAD : 必然死源` → `REMOVED-STATE: 必然死源 -> https://dead.example.com/api.php/provide/vod`；`Get-Content state.json` 输出：
+```json
+{"removed":{"https://dead.example.com/api.php/provide/vod":{"removedAt":"2026-09-09","onlineStreak":0}}}
+```
+（日期为当天），随后清理临时目录。
 
 - [ ] **步骤 3：Commit**
 
@@ -519,12 +531,12 @@ git commit -m "ci(sources): import upstream before probe, widen commit set"
 **文件：**
 - 修改：`tests/source-import.tests.ps1`（追加一个端到端 dry-run 断言，可选如无则跳过）
 
-- [ ] **步骤 1：隔离临时目录跑全链路（import dry-run → probe 逻辑不动真清单）**
+- [ ] **步骤 1：隔离临时目录跑全链路（import dry-run → 不动真清单）**
 
 ```bash
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:SOURCE_LIST='tmp-import-sources.json'; $env:IMPORT_STATE='tmp-import-state.json'; & '.\source-import.ps1' -UpstreamUrl file://$((Resolve-Path '.\tests\fixtures\upstream-good.json').Path) -SkipProbe -DryRun; Remove-Item .\tmp-import-sources.json -ErrorAction SilentlyContinue; Remove-Item .\tmp-import-state.json -ErrorAction SilentlyContinue"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "& '.\source-import.ps1' -UpstreamUrl file://$((Resolve-Path '.\tests\fixtures\upstream-good.json').Path) -SkipProbe -DryRun"
 ```
-预期：输出 `NEW: 新极品资源站 (...)`、`NEW: 无限资源站 (...)`、`SKIP-DENY: 老色X资源站`、`SKIP-DEAD: 已死资源站`、`SKIP-DUP: 360资源站`、`DRYRUN: would write 5 sources`，**不动仓库内真实文件**。
+预期：输出 `NEW: 新极品资源站 (...)`、`NEW: 无限资源站 (...)`、`SKIP-DENY: 老色X资源站`、`SKIP-DEAD: 已死资源站`、`SKIP-DUP: 360资源站`、`DRYRUN: would write 7 sources`（真实清单 5 + 新极品 + 无限），**不动仓库内真实文件**（DryRun 模式不写盘）。
 
 - [ ] **步骤 2：真实清单不加新源时，跑 dry-run 确认幂等**
 
