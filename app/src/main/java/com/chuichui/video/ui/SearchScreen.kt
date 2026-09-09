@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Vod
+import com.chuichui.video.category.CategoryBlockerRepo
+import com.chuichui.video.category.CategoryFilter
 import com.chuichui.video.ui.theme.TextSecondary
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -47,19 +49,33 @@ fun SearchScreen(onOpenVod: (vodId: String, name: String) -> Unit) {
     var loading by remember { mutableStateOf(false) }
     var searched by remember { mutableStateOf(false) }
     val hasSource = remember { SourceRepo(ctx).load().isNotEmpty() }
+    val allowTerms = remember { CategoryBlockerRepo(ctx).load() }
     var searchJob by remember { mutableStateOf<Job?>(null) }
     val gridState = rememberLazyGridState()
+
+    /** 加载某次搜索的一个「有效页」：逐页过滤白名单，整页滤空则顺延下一页（到 pageCount 为止）。
+     *  返回 (过滤后片源, 是否还有更多页, 实际使用的末页号)。 */
+    suspend fun loadFiltered(kw: String, startPage: Int): Triple<List<Vod>, Boolean, Int> {
+        var pg = startPage
+        while (true) {
+            val r = loadVodPageFromSource(ctx, pg) { adapter -> adapter.search(kw, pg) }
+            val kept = r.vods.filter { CategoryFilter.isAllowed(it.typeName, allowTerms) }
+            val more = r.hasMore(pg)
+            if (kept.isNotEmpty() || !more) return Triple(kept, more, pg)
+            pg++
+        }
+    }
 
     fun runSearch() {
         val kw = keyword.trim()
         if (kw.isEmpty()) return
         searchJob?.cancel()
         loading = true
-        page = 1
         searchJob = scope.launch {
-            val r = loadVodPageFromSource(ctx, 1) { adapter -> adapter.search(kw, 1) }
-            vods = r.vods
-            hasMore = r.hasMore(1)
+            val (list, more, lastPg) = loadFiltered(kw, 1)
+            vods = list
+            page = lastPg
+            hasMore = more
             loading = false
             searched = true
         }
@@ -72,10 +88,10 @@ fun SearchScreen(onOpenVod: (vodId: String, name: String) -> Unit) {
         loading = true
         val next = page + 1
         searchJob = scope.launch {
-            val r = loadVodPageFromSource(ctx, next) { adapter -> adapter.search(kw, next) }
-            vods = vods + r.vods
-            page = next
-            hasMore = r.hasMore(next)
+            val (list, more, lastPg) = loadFiltered(kw, next)
+            vods = vods + list
+            page = lastPg
+            hasMore = more
             loading = false
         }
     }
