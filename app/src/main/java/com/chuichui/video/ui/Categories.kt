@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +36,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chuichui.video.SourceRepo
 import com.chuichui.video.bean.Category
+import com.chuichui.video.category.CategoryBlockerRepo
+import com.chuichui.video.category.CategoryFilter
+import com.chuichui.video.category.CategoryGroup
 import com.chuichui.video.ui.theme.AccentBlue
 import com.chuichui.video.ui.theme.AccentPurple
 import com.chuichui.video.ui.theme.SurfaceHigh
@@ -53,6 +57,7 @@ fun Categories(
     var sources by remember { mutableStateOf(repo.load()) }
     var selectedId by remember { mutableStateOf(repo.selectedId()) }
     var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
+    var groups by remember { mutableStateOf<List<CategoryGroup>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
     LaunchedEffect(selectedId) {
@@ -61,6 +66,7 @@ fun Categories(
         repo.setSelectedId(selectedId)
         loading = true
         categories = loadFromSource(ctx) { adapter -> adapter.home() }
+        groups = CategoryFilter.buildGroups(categories, CategoryBlockerRepo(ctx).load())
         loading = false
     }
 
@@ -115,12 +121,36 @@ fun Categories(
                     textAlign = TextAlign.Center,
                 )
             }
-            else -> LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 128.dp),
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
-            ) {
-                items(categories, key = { it.typeId }) { c ->
-                    CategoryTile(c.typeName) { onOpenCategory(c.typeId, c.typeName) }
+            else -> {
+                if (categories.isNotEmpty() && groups.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            "已屏蔽全部敏感分类\n可在「源」→「分类屏蔽」调整",
+                            color = TextSecondary,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 128.dp),
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
+                    ) {
+                        groups.forEach { g ->
+                            if (g.title != null) {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Text(
+                                        g.title,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = TextSecondary,
+                                        modifier = Modifier.padding(start = 4.dp, top = 10.dp, bottom = 2.dp),
+                                    )
+                                }
+                            }
+                            items(g.categories, key = { it.typeId }) { c ->
+                                CategoryTile(c.typeName) { onOpenCategory(c.typeId, c.typeName) }
+                            }
+                        }
+                    }
                 }
             }
         }
