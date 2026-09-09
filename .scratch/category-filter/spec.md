@@ -1,6 +1,6 @@
 # 锤锤影视 — 分类白名单 + 两级渲染 规格
 
-> 状态：approved（2026-09-09 brainstorming 定稿）
+> 状态：resolved（2026-09-09 实现完成，全量回归通过；手动真机验证待完成）
 > 关联：`CONTEXT.md` 词表、`.scratch/ui-redesign`（主题与大改已落地）
 > 范围：`app/` 模块，mobile 与 leanback 共享同一套 Compose UI
 
@@ -73,7 +73,7 @@
 
 - `CategoryFilterTest`（JVM 单测）：
   - 命中 / 未命中；大小写无关；空词表（全部隐藏）；空 typeName（放行）；trim 词。
-- 两级分组析构：`home()` 有 pid / 无 pid / 孤立 pid=0 三种形态的归类逻辑——若抽成纯函数则单测，否则以 UI 行为 + 构建验证覆盖。
+- 两级分组析构：已抽为纯函数 `CategoryFilter.buildGroups(raw, terms)`（返回 `CategoryGroup` 列表，`title==null` 表示无标题组），`CategoryFilterTest` 对平铺 / 两级 / 孤立 pid=0 / 父命中不放开叶子等形态均有单测覆盖。
 - 全量验证命令：`.\gradlew.bat assembleMobileDebug assembleLeanbackDebug testMobileDebugUnitTest`（JDK21，`JAVA_HOME=C:\Program Files\Java\jdk-21`）。
 
 ## 明确不做（Non-goals）
@@ -87,7 +87,8 @@
 
 - 新增：`Category.typePid`（long）
 - 新增：`category/CategoryBlockerRepo.java`（`chui_cat`/`allowTerms`）
-- 新增：`category/CategoryFilter.java`（`isAllowed(typeName, terms)` + 分组析构纯函数）
+- 新增：`category/CategoryFilter.java`（`isAllowed(typeName, terms)` + `buildGroups(raw, terms)`）
+- 新增：`category/CategoryGroup.java`（分组 VO：`title` 可 null，`categories`）
 - 修改：`api/MaccmsJson.java:categories()` 解析 `type_pid`
 - 修改：`ui/Categories.kt`（分级分组渲染 + 白名单）
 - 修改：`ui/SearchScreen.kt`（逐页过滤 + 滤空顺延）
