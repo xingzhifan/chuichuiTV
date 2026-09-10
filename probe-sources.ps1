@@ -1,4 +1,4 @@
-# probe-sources.ps1 - probe aliveness of each source and rewrite sources.json
+﻿# probe-sources.ps1 - probe aliveness of each source and rewrite sources.json
 # Usage: pwsh probe-sources.ps1
 # Overridable env: SOURCE_LIST (default ./sources.json), HTTP_TIMEOUT_SEC (default 12)
 
@@ -51,6 +51,24 @@ foreach ($s in $sources) {
         [void]$dead.Add($s)
         Write-Output "DEAD : $name ($url)"
     }
+}
+
+# 剔除失效源时，记录到防抖状态，供 source-import 冷却用
+if ($dead.Count -gt 0) {
+    $statePath = if ($env:IMPORT_STATE) { $env:IMPORT_STATE } else { ".source-import-state.json" }
+    $state = if (Test-Path $statePath) { (Get-Content $statePath -Raw | ConvertFrom-Json) } else { @{ removed = [pscustomobject]@{} } }
+    if ($null -eq $state.removed) { $state.removed = @{} }
+    foreach ($s in $dead) {
+        # key 规范化与 source-import.ps1 的 Get-CanonicalApi 保持一致（http→https / 去尾斜杠 / 小写）
+        $key = $s.api.Trim()
+        if ($key -match '^http://') { $key = "https://" + $key.Substring(7) }
+        $key = $key.TrimEnd('/').ToLowerInvariant()
+        $rec = New-Object PSObject -Property @{ removedAt = (Get-Date -Format "yyyy-MM-dd"); onlineStreak = 0 }
+        $state.removed | Add-Member -Name $key -Value $rec -MemberType NoteProperty -Force
+        Write-Output "REMOVED-STATE: $($s.name) -> $key"
+    }
+    $stateFull = [System.IO.Path]::GetFullPath($statePath)
+    [System.IO.File]::WriteAllText($stateFull, ($state | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))
 }
 
 if ($alive.Count -gt 0) {
