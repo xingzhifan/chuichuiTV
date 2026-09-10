@@ -7,7 +7,7 @@ on:
     - cron: "30 6 * * *"
   workflow_dispatch: {}
   push:
-    paths: ["sources.json", "source-deny.txt", ".source-import-state.json", "probe-sources.ps1", "source-import.ps1", ".github/workflows/update-sources.yml"]
+    paths: ["sources.json", "source-deny.txt", "source-content-deny.txt", ".source-import-state.json", "probe-sources.ps1", "source-import.ps1", ".github/workflows/update-sources.yml"]
 
 permissions:
   contents: write
@@ -32,10 +32,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet HEAD -- sources.json .source-import-state.json source-deny.txt; then
+          if git diff --quiet HEAD -- sources.json .source-import-state.json source-deny.txt source-content-deny.txt; then
             echo "no change"
           else
-            git add sources.json .source-import-state.json source-deny.txt
+            git add sources.json .source-import-state.json source-deny.txt source-content-deny.txt
             git commit -m "chore(sources): auto sync sources (import + prune)"
             git push
           fi

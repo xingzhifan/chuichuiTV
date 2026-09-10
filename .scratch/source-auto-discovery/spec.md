@@ -39,9 +39,12 @@ workflow 有实质变化则自动提交（`sources.json`、`.source-import-state
 对上游 `online.json` 每个条目依次套用：
 
 1. **上游在线**：`health.is_alive == $true`（上游判定在线；`status` 仅参考，以其本地健康检查为准）。
-2. **非成人**：`tags` 不含「成人」；`name`/`api`/`description`（忽略大小写，子串匹配）不命中 `source-deny.txt` 黑词表。首版黑词表覆盖：`老色、色猫、成人、色情、黄、av资源、搜av、白嫖、美少女、x水机、香x儿、豆豆、麻豆、番号、湿乐园、杏吧、伦理、91`。
-3. **api 形状**：以 `https?://` 开头、以 `vod`/`api.php`/`json.php` 结尾等可被 maccms 探活接受的形态（否则视为不可用接口丢弃）。
-4. **maccms 探活**：`GET {api}?ac=list`，`StatusCode -eq 200` 且响应体含 `"class"` 或 `"list"`（复用 `probe-sources.ps1:39-41` 的同一判据）。失败 → 丢弃并打印 `SKIP-UNRESPONSIVE`。**逐条带超时（默认 12s）**；为控时长，新候选一般 ≤ 上游在线数（≈ 60 上限）。
+2. **非成人（元数据层）**：`name`/`api`/`description`（忽略大小写，子串匹配）不命中 `source-deny.txt` 黑词表。首版黑词表覆盖：`老色、色猫、成人、色情、黄、av资源、搜av、白嫖、美少女、x水机、香x儿、豆豆、麻豆、番号、湿乐园、杏吧、伦理、91`。
+3. **非成人（内容层，2026-09-10 新增）**：对新候选 `GET {api}?ac=list` 返回的 JSON 解析 `class[].type_name`（分类名），任一命中 `source-content-deny.txt` 强词表 → `SKIP-ADULT` 拒绝，并写入 `state.blocked` **永久封禁**（不入冷却，避免重入）。强词表：`成人、色情、情色、无码、有码、偷拍、AV、SM、制服、自拍、丝袜、熟女、激情、口爆`。**弱词「伦理」不触发内容层**（常规站亦有「伦理」分类，误杀太大）；元数据层例外：`伦理` 仍保留在 `source-deny.txt`，因其名字含「伦理」的源基本可判定，实盘验证：0 误杀。
+4. **api 形状**：以 `https?://` 开头、以 `vod`/`api.php`/`json.php` 结尾等可被 maccms 探活接受的形态（否则视为不可用接口丢弃）。
+5. **maccms 探活**：`GET {api}?ac=list`，`StatusCode -eq 200` 且响应体含 `"class"` 或 `"list"`（复用 `probe-sources.ps1:39-41` 的同一判据）。失败 → 丢弃并打印 `SKIP-UNRESPONSIVE`。**逐条带超时（默认 12s）**；为控时长，新候选一般 ≤ 上游在线数（≈ 60 上限）。
+
+> **存量清理**：`probe-sources.ps1`（step B）对 `sources.json` 全量探活时同步做内容层检查——返回分类命中强词表 → `ADULT` 剔除并写入 `state.blocked`（永久，不参与冷却重入）。一次 Action 运行即「import 拦新增 + probe 清存量」双保险。
 
 ### 3. 去重
 
@@ -55,11 +58,14 @@ workflow 有实质变化则自动提交（`sources.json`、`.source-import-state
 
 - 状态文件 `.source-import-state.json`：
   ```json
-  { "removed": { "<api>": { "removedAt": "2026-09-09", "onlineStreak": 0 } } }
+  { "removed": { "<api>": { "removedAt": "2026-09-09", "onlineStreak": 0 } },
+    "blocked":  { "<api>": { "blockedAt": "2026-09-10", "reason": "adult-content-deny" } } }
   ```
-- **step B（probe）**剔除任一源时，写入/更新该 api 的记录：`removedAt=today`、`onlineStreak=0`。
+- **step B（probe）**剔除任一「失效」源时，写入/更新该 api 到 `removed`：`removedAt=today`、`onlineStreak=0`。
+- **step B（probe）**剔除任一「成人内容」源时，写入该 api 到 `blocked`（`reason=adult-content-deny`），**永久封禁**。
 - **step A（import）**发现候选源时：
-  - 不在 `removed` 表 → 正常合入。
+  - 命中 `blocked` 表 → 直接 `SKIP-BLOCKED`（永久，不参与冷却）。
+  - 不在 `removed` 表 → 正常合入（再经内容层过滤，见 §2）。
   - 在 `removed` 表 → `onlineStreak += 1`；仅当 `onlineStreak >= 3`（即连续 3 次定时任务在线）才重新合入，并从 `removed` 表删除；否则跳过（打印 `COOLING`）。
 - 手动编辑进 `sources.json` 的源不受防抖影响（只在自动剔除/自动重入路径生效）。
 
@@ -98,6 +104,7 @@ workflow 有实质变化则自动提交（`sources.json`、`.source-import-state
 
 - 新增：`source-import.ps1`（`-DryRun`、`-UpstreamUrl`、复用 `HTTP_TIMEOUT_SEC`/`SOURCE_LIST` 环境变量）
 - 新增：`source-deny.txt`
-- 新增：`.source-import-state.json`（`removed.<api>.removedAt` / `onlineStreak`）
-- 修改：`probe-sources.ps1`（剔除时记录防抖状态）
-- 修改：`.github/workflows/update-sources.yml`（step A + 提交范围）
+- 新增：`source-content-deny.txt`（内容层强词表，见 §2.3）
+- 新增：`.source-import-state.json`（`removed.<api>.removedAt` / `onlineStreak` + `blocked.<api>.blockedAt` / `reason`）
+- 修改：`probe-sources.ps1`（剔除时记录防抖状态；新增内容层检查 + `blocked` 永久封禁）
+- 修改：`.github/workflows/update-sources.yml`（step A + 提交范围含 `source-content-deny.txt`）

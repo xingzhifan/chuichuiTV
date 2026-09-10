@@ -36,13 +36,29 @@ function Get-IpList([string]$path) {
 }
 
 function Test-AcListAlive([string]$api, [int]$timeout) {
-    if ($env:SKIP_PROBE -eq "1") { return $true }
+    return ($null -ne (Get-AcListJson $api $timeout))
+}
+
+function Get-AcListJson([string]$api, [int]$timeout) {
+    if ($env:SKIP_PROBE -eq "1") { return [pscustomobject]@{} }
     $url = "$($api)?ac=list"
     try {
         $resp = Invoke-WebRequest -UseBasicParsing -Uri $url -TimeoutSec $timeout
         $txt = $resp.Content
-        return ($resp.StatusCode -eq 200 -and ($txt.IndexOf('"class"') -ge 0 -or $txt.IndexOf('"list"') -ge 0))
-    } catch { return $false }
+        if ($resp.StatusCode -ne 200 -or ($txt.IndexOf('"class"') -lt 0 -and $txt.IndexOf('"list"') -lt 0)) { return $null }
+        return ($txt | ConvertFrom-Json)
+    } catch { return $null }
+}
+
+function Test-ContentDenyEntry($json, [string[]]$deny) {
+    if ($null -eq $json -or $null -eq $json.class) { return $false }
+    $hay = (@($json.class | ForEach-Object { $_.type_name } | Where-Object { $_ }) -join ' ')
+    if ($hay.Length -eq 0) { return $false }
+    foreach ($w in $deny) {
+        if ($w.Trim().Length -eq 0) { continue }
+        if ($hay.IndexOf($w.Trim(), [System.StringComparison]::OrdinalIgnoreCase) -ge 0) { return $true }
+    }
+    return $false
 }
 
 function Write-Sources([array]$list, [string]$path) {
@@ -64,7 +80,32 @@ function Invoke-CooldownStep($state, [string]$api) {
     return @{ reAdd = $true; onlineStreak = $null; removedKey = $null }
 }
 
-function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, $state) {
+function Test-BlockedApi($state, [string]$api) {
+    $blocked = $state.blocked
+    if ($null -eq $blocked) { return $false }
+    if ($blocked -is [hashtable]) { return $blocked.ContainsKey($api) }
+    return ($blocked.PSObject.Properties.Name -contains $api)
+}
+
+function Add-BlockedApi($state, [string]$api, [string]$reason) {
+    if ($null -eq $state.blocked -or $state.blocked -is [string]) {
+        if ($state -is [hashtable]) {
+            $state["blocked"] = @{}
+        } elseif ($state.PSObject.Properties.Name -notcontains "blocked") {
+            $state | Add-Member -Name "blocked" -Value ([hashtable]@{}) -MemberType NoteProperty -Force
+        }
+    }
+    $rec = @{ blockedAt = (Get-Date -Format "yyyy-MM-dd"); reason = $reason }
+    if ($state.blocked -is [hashtable]) {
+        if (-not $state.blocked.ContainsKey($api)) { $state.blocked[$api] = $rec }
+    } else {
+        if ($state.blocked.PSObject.Properties.Name -notcontains $api) {
+            $state.blocked | Add-Member -Name $api -Value $rec -MemberType NoteProperty -Force
+        }
+    }
+}
+
+function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, [string[]]$contentDeny, $state) {
     $existingMap = @{}
     foreach ($s in @($existing)) {
         $canon = Get-CanonicalApi $s.api
@@ -86,6 +127,7 @@ function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, $state) {
         if (-not ($e.api -match '^https?://')) { Write-Host "SKIP-NOURL: $($e.name)"; continue }
         $canon = Get-CanonicalApi $e.api
         if ($existingMap.ContainsKey($canon) -or $seen.ContainsKey($canon)) { Write-Host "SKIP-DUP: $($e.name)"; continue }
+        if (Test-BlockedApi $state $canon) { Write-Host "SKIP-BLOCKED: $($e.name)"; continue }
         $cd = Invoke-CooldownStep $state $canon
         if ($cd.reAdd -eq $false) {
             Write-Host "COOLING: $($e.name) (streak $($cd.onlineStreak)/$COOLING_DAYS)"
@@ -93,7 +135,13 @@ function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, $state) {
             $rec.onlineStreak = $cd.onlineStreak
             continue
         }
-        if (-not (Test-AcListAlive $e.api $probeTimeoutSec)) { Write-Host "SKIP-UNRESPONSIVE: $($e.name)"; continue }
+        $aliveJson = Get-AcListJson $e.api $probeTimeoutSec
+        if ($null -eq $aliveJson) { Write-Host "SKIP-UNRESPONSIVE: $($e.name)"; continue }
+        if (Test-ContentDenyEntry $aliveJson $contentDeny) {
+            Add-BlockedApi $state $canon $e.name
+            Write-Host "SKIP-ADULT: $($e.name)"
+            continue
+        }
         $seen[$canon] = $true
         Write-Host "NEW: $($e.name) ($canon)"
         [void]$out.Add(@{
@@ -116,6 +164,7 @@ if ($NoMain) { return }
 
 # ---- main ----
 $deny = Get-IpList (Join-Path $PSScriptRoot "source-deny.txt") | Where-Object { $_ -and -not $_.StartsWith("#") }
+$contentDeny = Get-IpList (Join-Path $PSScriptRoot "source-content-deny.txt") | Where-Object { $_ -and -not $_.StartsWith("#") }
 $state = if (Test-Path $statePath) { (Get-Content $statePath -Raw -Encoding UTF8 | ConvertFrom-Json) } else { @{ removed = @{} } }
 $existing = if (Test-Path $listPath) { @(@(Get-Content $listPath -Raw -Encoding UTF8 | ConvertFrom-Json)) } else { @() }
 $upstreamRaw = if ($UpstreamUrl -match '^file://') {
@@ -123,7 +172,7 @@ $upstreamRaw = if ($UpstreamUrl -match '^file://') {
 } else {
     (Invoke-WebRequest -UseBasicParsing -Uri $UpstreamUrl -TimeoutSec $probeTimeoutSec).Content | ConvertFrom-Json
 }
-$merged = Invoke-ImportMerge $upstreamRaw $existing $deny $state
+$merged = Invoke-ImportMerge $upstreamRaw $existing $deny $contentDeny $state
 
 if ($DryRun) {
     Write-Output "DRYRUN: would write $(@($merged).Count) sources to $listPath"

@@ -30,8 +30,9 @@ $env:SKIP_PROBE = "1"
 $up = Get-Content (Join-Path $PSScriptRoot "fixtures\upstream-good.json") -Raw | ConvertFrom-Json
 $initial = Get-Content (Join-Path $PSScriptRoot "fixtures\sources-initial.json") -Raw | ConvertFrom-Json
 $deny = Get-IpList (Join-Path $PSScriptRoot "..\source-deny.txt") | Where-Object { $_ -and -not $_.StartsWith("#") }
-$state = @{ removed = @{} }
-$merged = Invoke-ImportMerge $up $initial $deny $state
+$contentDeny = Get-IpList (Join-Path $PSScriptRoot "..\source-content-deny.txt") | Where-Object { $_ -and -not $_.StartsWith("#") }
+$state = @{ removed = @{}; blocked = @{} }
+$merged = Invoke-ImportMerge $up $initial $deny $contentDeny $state
 $apis = @($merged | ForEach-Object { $_.api })
 Assert ($apis -contains "https://jipinvip1.com/api.php/provide/vod") "new good source merged"
 Assert (-not ($apis -contains "https://apilsbzy1.com/api.php/provide/vod")) "deny-word source not merged"
@@ -42,6 +43,27 @@ $sorted = @($merged | ForEach-Object { $_.api })
 Assert ($sorted[0] -eq "https://jipinvip1.com/api.php/provide/vod") "sort rating desc: 4.8 first"
 Assert ($sorted[1] -eq "https://api.wujinapi.me/api.php/provide/vod" -and $sorted[2] -eq "https://360zy.com/api.php/provide/vod") "tie on rating 4.5 sorted by resp asc (354 < 952)"
 Assert ($sorted[4] -eq "http://cj.lziapi.com/api.php/provide/vod/") "existing source without upstream data last (original api preserved)"
+
+# ---- task 7: content-layer deny (Test-ContentDenyEntry) ----
+$adultJson = [pscustomobject]@{ class = @(@{ type_name = "日韩无码"; type_id = 1 }, @{ type_name = "偷拍区"; type_id = 2 }) }
+$cleanJson = [pscustomobject]@{ class = @(@{ type_name = "电影"; type_id = 1 }, @{ type_name = "伦理"; type_id = 2 }, @{ type_name = "动作片"; type_id = 3 }) }
+$listOnlyJson = [pscustomobject]@{ list = @() }
+Assert (Test-ContentDenyEntry $adultJson $contentDeny) "content deny hits strong adult term (无码)"
+Assert (-not (Test-ContentDenyEntry $cleanJson $contentDeny)) "weak term 伦理 alone does not trigger content deny"
+Assert (-not (Test-ContentDenyEntry $listOnlyJson $contentDeny)) "no class array → no content deny"
+Assert (-not (Test-ContentDenyEntry $null $contentDeny)) "null json → no content deny"
+
+# ---- task 7: blocked set (permanent, no cooldown) ----
+$overlap = @{ "https://api.wujinapi.me/api.php/provide/vod" = @{ blockedAt = "2026-09-10"; reason = "adult-content-deny" } }
+$stateB = @{ removed = @{}; blocked = $overlap }
+$mergedB = Invoke-ImportMerge $up $initial $deny $contentDeny $stateB
+$apisB = @($mergedB | ForEach-Object { $_.api })
+Assert (-not ($apisB -contains "https://api.wujinapi.me/api.php/provide/vod")) "blocked source not merged (permanent)"
+Assert (Test-BlockedApi $stateB "https://api.wujinapi.me/api.php/provide/vod") "Test-BlockedApi true for blocked key"
+Assert (-not (Test-BlockedApi $stateB "https://127.0.0.1/nope")) "Test-BlockedApi false for unknown key"
+$stB2 = @{ removed = @{}; blocked = @{} }
+Add-BlockedApi $stB2 "https://api.wujinapi.me/api.php/provide/vod" "adult-content-deny"
+Assert (Test-BlockedApi $stB2 "https://api.wujinapi.me/api.php/provide/vod") "Add-BlockedApi records canonical key"
 
 # ---- task 3b: cooldown machine ----
 $st2 = @{ removed = @{ "https://dead.ex.com/api.php/provide/vod" = @{ removedAt = "2026-09-01"; onlineStreak = 2 } } }
