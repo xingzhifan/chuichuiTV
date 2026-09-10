@@ -1,6 +1,6 @@
 # 锤锤影视 — 源自动发现 + 合入 规格
 
-> 状态：approved（2026-09-09 设计获批，待实现）
+> 状态：resolved（2026-09-10 实现完成：6 任务全部落地并审查通过，端到端 dry-run / 幂等 / 单测全部通过，sources.json 未受演练影响）
 > 关联：`probe-sources.ps1`、`.github/workflows/update-sources.yml`、`sources.json`、`SOURCES.md`
 > 范围：GitHub 管道侧（根仓库），不改 `app/` / `chuichui/` / `modsearch/`；`publish-sources/` 保持独立副本不同步
 
