@@ -1,0 +1,5 @@
+﻿[
+  {"name": "魔都资源", "api": "https://www.mdzyapi.com/api.php/provide/vod/", "type": "maccms"},
+  {"name": "360资源",  "api": "https://360zy.com/api.php/provide/vod",       "type": "maccms"},
+  {"name": "采集聚合", "api": "http://cj.lziapi.com/api.php/provide/vod/",   "type": "maccms"}
+]
