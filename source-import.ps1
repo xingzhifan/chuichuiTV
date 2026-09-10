@@ -52,7 +52,7 @@ function Write-Sources([array]$list, [string]$path) {
     [System.IO.File]::WriteAllText($full, $json, (New-Object System.Text.UTF8Encoding($false)))
 }
 
-function Invoke-CooldownStep([hashtable]$state, [string]$api) {
+function Invoke-CooldownStep($state, [string]$api) {
     $removed = $state.removed
     $found = if ($removed -is [hashtable]) { $removed.ContainsKey($api) } else { $removed.PSObject.Properties.Name -contains $api }
     if ($null -ne $removed -and $found) {
@@ -64,7 +64,7 @@ function Invoke-CooldownStep([hashtable]$state, [string]$api) {
     return @{ reAdd = $true; onlineStreak = $null; removedKey = $null }
 }
 
-function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, [hashtable]$state) {
+function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, $state) {
     $existingMap = @{}
     foreach ($s in @($existing)) {
         $canon = Get-CanonicalApi $s.api
@@ -116,8 +116,8 @@ if ($NoMain) { return }
 
 # ---- main ----
 $deny = Get-IpList (Join-Path $PSScriptRoot "source-deny.txt") | Where-Object { $_ -and -not $_.StartsWith("#") }
-$state = if (Test-Path $statePath) { (Get-Content $statePath -Raw | ConvertFrom-Json) } else { @{ removed = @{} } }
-$existing = if (Test-Path $listPath) { @(@(Get-Content $listPath -Raw | ConvertFrom-Json)) } else { @() }
+$state = if (Test-Path $statePath) { (Get-Content $statePath -Raw -Encoding UTF8 | ConvertFrom-Json) } else { @{ removed = @{} } }
+$existing = if (Test-Path $listPath) { @(@(Get-Content $listPath -Raw -Encoding UTF8 | ConvertFrom-Json)) } else { @() }
 $upstreamRaw = if ($UpstreamUrl -match '^file://') {
     Get-Content ($UpstreamUrl -replace '^file://', '') -Raw | ConvertFrom-Json
 } else {

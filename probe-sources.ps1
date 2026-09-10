@@ -56,7 +56,7 @@ foreach ($s in $sources) {
 # 剔除失效源时，记录到防抖状态，供 source-import 冷却用
 if ($dead.Count -gt 0) {
     $statePath = if ($env:IMPORT_STATE) { $env:IMPORT_STATE } else { ".source-import-state.json" }
-    $state = if (Test-Path $statePath) { (Get-Content $statePath -Raw | ConvertFrom-Json) } else { @{ removed = [pscustomobject]@{} } }
+    $state = if (Test-Path $statePath) { (Get-Content $statePath -Raw -Encoding UTF8 | ConvertFrom-Json) } else { @{ removed = [pscustomobject]@{} } }
     if ($null -eq $state.removed) { $state.removed = @{} }
     foreach ($s in $dead) {
         # key 规范化与 source-import.ps1 的 Get-CanonicalApi 保持一致（http→https / 去尾斜杠 / 小写）
