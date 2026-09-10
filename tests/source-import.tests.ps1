@@ -64,6 +64,7 @@ Assert (-not (Test-BlockedApi $stateB "https://127.0.0.1/nope")) "Test-BlockedAp
 $stB2 = @{ removed = @{}; blocked = @{} }
 Add-BlockedApi $stB2 "https://api.wujinapi.me/api.php/provide/vod" "adult-content-deny"
 Assert (Test-BlockedApi $stB2 "https://api.wujinapi.me/api.php/provide/vod") "Add-BlockedApi records canonical key"
+Assert ($stB2.blocked["https://api.wujinapi.me/api.php/provide/vod"].reason -eq "adult-content-deny") "Add-BlockedApi stores canonical reason"
 
 # ---- task 3b: cooldown machine ----
 $st2 = @{ removed = @{ "https://dead.ex.com/api.php/provide/vod" = @{ removedAt = "2026-09-01"; onlineStreak = 2 } } }

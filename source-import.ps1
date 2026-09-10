@@ -138,7 +138,7 @@ function Invoke-ImportMerge($upstream, $existing, [string[]]$deny, [string[]]$co
         $aliveJson = Get-AcListJson $e.api $probeTimeoutSec
         if ($null -eq $aliveJson) { Write-Host "SKIP-UNRESPONSIVE: $($e.name)"; continue }
         if (Test-ContentDenyEntry $aliveJson $contentDeny) {
-            Add-BlockedApi $state $canon $e.name
+            Add-BlockedApi $state $canon "adult-content-deny"
             Write-Host "SKIP-ADULT: $($e.name)"
             continue
         }
