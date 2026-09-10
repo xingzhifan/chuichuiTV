@@ -1,122 +1,122 @@
 [
   {
+    "type": "maccms",
     "api": "https://bfzyapi.com/api.php/provide/vod",
-    "name": "暴风资源站",
-    "type": "maccms"
+    "name": "暴风资源站"
   },
   {
+    "type": "maccms",
     "api": "https://api.wujinapi.me/api.php/provide/vod",
-    "name": "无尽资源站",
-    "type": "maccms"
+    "name": "无尽资源站"
   },
   {
+    "type": "maccms",
     "api": "https://zuidazy.me/api.php/provide/vod",
-    "name": "最大资源站",
-    "type": "maccms"
+    "name": "最大资源站"
   },
   {
+    "type": "maccms",
     "api": "https://api.niuniuzy.me/api.php/provide/vod",
-    "name": "牛牛资源",
-    "type": "maccms"
+    "name": "牛牛资源"
   },
   {
+    "type": "maccms",
     "api": "https://haohuazy.com/api.php/provide/vod",
-    "name": "豪华资源站",
-    "type": "maccms"
+    "name": "豪华资源站"
   },
   {
+    "type": "maccms",
     "api": "https://360zy.com/api.php/provide/vod",
-    "name": "360资源",
-    "type": "maccms"
+    "name": "360资源"
   },
   {
+    "type": "maccms",
     "api": "https://hongniuzy2.com/api.php/provide/vod",
-    "name": "红牛资源站",
-    "type": "maccms"
+    "name": "红牛资源站"
   },
   {
+    "type": "maccms",
     "api": "https://www.mdzyapi.com/api.php/provide/vod/",
-    "name": "魔都资源",
-    "type": "maccms"
+    "name": "魔都资源"
   },
   {
+    "type": "maccms",
     "api": "https://cj.yayazy.net/api.php/provide/vod",
-    "name": "鸭鸭资源站",
-    "type": "maccms"
+    "name": "鸭鸭资源站"
   },
   {
+    "type": "maccms",
     "api": "https://jszyapi.com/api.php/provide/vod",
-    "name": "极速资源站",
-    "type": "maccms"
+    "name": "极速资源站"
   },
   {
+    "type": "maccms",
     "api": "https://tyyszyapi.com/api.php/provide/vod",
-    "name": "天涯影视资源",
-    "type": "maccms"
+    "name": "天涯影视资源"
   },
   {
+    "type": "maccms",
     "api": "https://suonizy.net/api.php/provide/vod",
-    "name": "索尼采集站",
-    "type": "maccms"
+    "name": "索尼采集站"
   },
   {
+    "type": "maccms",
     "api": "https://m3u8.apiyhzy.com/api.php/provide/vod",
-    "name": "樱花资源站",
-    "type": "maccms"
+    "name": "樱花资源站"
   },
   {
+    "type": "maccms",
     "api": "https://ffzy5.tv/api.php/provide/vod",
-    "name": "非凡资源站",
-    "type": "maccms"
+    "name": "非凡资源站"
   },
   {
+    "type": "maccms",
     "api": "https://huyazy.net/api.php/provide/vod",
-    "name": "虎牙资源站",
-    "type": "maccms"
+    "name": "虎牙资源站"
   },
   {
+    "type": "maccms",
     "api": "https://jyzyapi.com/provide/vod",
-    "name": "金鹰资源站",
-    "type": "maccms"
+    "name": "金鹰资源站"
   },
   {
+    "type": "maccms",
     "api": "https://api.maoyanapi.top/api.php/provide/vod",
-    "name": "猫眼资源",
-    "type": "maccms"
+    "name": "猫眼资源"
   },
   {
+    "type": "maccms",
     "api": "https://iqiyizyapi.com/api.php/provide/vod",
-    "name": "爱奇艺资源",
-    "type": "maccms"
+    "name": "爱奇艺资源"
   },
   {
+    "type": "maccms",
     "api": "https://subocj.com/api.php/provide/vod",
-    "name": "速播资源站",
-    "type": "maccms"
+    "name": "速播资源站"
   },
   {
+    "type": "maccms",
     "api": "https://api.guangsuapi.com/api.php/provide/vod",
-    "name": "光速资源站",
-    "type": "maccms"
+    "name": "光速资源站"
   },
   {
+    "type": "maccms",
     "api": "https://dbzy.tv/api.php/provide/vod",
-    "name": "豆瓣资源站",
-    "type": "maccms"
+    "name": "豆瓣资源站"
   },
   {
+    "type": "maccms",
     "api": "https://mtzy5.com/api.php/provide/vod",
-    "name": "茅台资源站",
-    "type": "maccms"
+    "name": "茅台资源站"
   },
   {
+    "type": "maccms",
     "api": "https://ikunzyapi.com/api.php/provide/vod",
-    "name": "爱坤资源站",
-    "type": "maccms"
+    "name": "爱坤资源站"
   },
   {
+    "type": "maccms",
     "api": "http://cj.lziapi.com/api.php/provide/vod/",
-    "name": "采集聚合",
-    "type": "maccms"
+    "name": "采集聚合"
   }
 ]
