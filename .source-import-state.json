@@ -1,3 +1,81 @@
 {
-  "removed": {}
+  "removed": {},
+  "blocked": {
+    "https://api.vnzyz.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "越南资源站"
+    },
+    "https://jipinvip1.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://apilj.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://naixxzy.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://apidanaizi.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://jkunzyapi.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://www.jingpinx.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://heiliaozyapi.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://shayuapi.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://155api.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://slapibf.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://hsckzy888.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://apiyutu.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://aosikazy.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://lbapi9.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://thzy1.me/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://api.xiaojizy.live/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://api.ddapi.cc/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    },
+    "https://fqzy.me/api.php/provide/vod": {
+      "blockedAt": "2026-09-10",
+      "reason": "adult-content-deny"
+    }
+  }
 }
