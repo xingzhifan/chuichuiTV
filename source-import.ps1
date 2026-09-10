@@ -119,7 +119,7 @@ $deny = Get-IpList (Join-Path $PSScriptRoot "source-deny.txt") | Where-Object { 
 $state = if (Test-Path $statePath) { (Get-Content $statePath -Raw -Encoding UTF8 | ConvertFrom-Json) } else { @{ removed = @{} } }
 $existing = if (Test-Path $listPath) { @(@(Get-Content $listPath -Raw -Encoding UTF8 | ConvertFrom-Json)) } else { @() }
 $upstreamRaw = if ($UpstreamUrl -match '^file://') {
-    Get-Content ($UpstreamUrl -replace '^file://', '') -Raw | ConvertFrom-Json
+    Get-Content ($UpstreamUrl -replace '^file://', '') -Raw -Encoding UTF8 | ConvertFrom-Json
 } else {
     (Invoke-WebRequest -UseBasicParsing -Uri $UpstreamUrl -TimeoutSec $probeTimeoutSec).Content | ConvertFrom-Json
 }
