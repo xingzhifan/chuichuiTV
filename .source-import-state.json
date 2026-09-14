@@ -76,6 +76,14 @@
     "https://fqzy.me/api.php/provide/vod": {
       "blockedAt": "2026-09-10",
       "reason": "adult-content-deny"
+    },
+    "https://www.xxibaozyw.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-14",
+      "reason": "adult-content-deny"
+    },
+    "https://www.xiangjiaozyw.com/api.php/provide/vod": {
+      "blockedAt": "2026-09-14",
+      "reason": "adult-content-deny"
     }
   }
 }
