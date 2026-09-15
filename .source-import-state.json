@@ -1,5 +1,10 @@
 {
-  "removed": {},
+  "removed": {
+    "https://iqiyizyapi.com/api.php/provide/vod": {
+      "removedAt": "2026-09-15",
+      "onlineStreak": 0
+    }
+  },
   "blocked": {
     "https://api.vnzyz.com/api.php/provide/vod": {
       "blockedAt": "2026-09-10",
