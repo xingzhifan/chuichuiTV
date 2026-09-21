@@ -2,11 +2,11 @@
   "removed": {
     "https://iqiyizyapi.com/api.php/provide/vod": {
       "removedAt": "2026-09-19",
-      "onlineStreak": 1
+      "onlineStreak": 2
     },
     "https://p2100.net/api.php/provide/vod": {
       "removedAt": "2026-09-20",
-      "onlineStreak": 0
+      "onlineStreak": 1
     }
   },
   "blocked": {
