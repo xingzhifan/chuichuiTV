@@ -85,11 +85,6 @@
     "name": "猫眼资源"
   },
   {
-    "api": "https://iqiyizyapi.com/api.php/provide/vod",
-    "type": "maccms",
-    "name": "爱奇艺资源站"
-  },
-  {
     "api": "https://subocj.com/api.php/provide/vod",
     "type": "maccms",
     "name": "速播资源站"
