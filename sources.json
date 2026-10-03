@@ -80,16 +80,6 @@
     "type": "maccms"
   },
   {
-    "api": "https://api.maoyanapi.top/api.php/provide/vod",
-    "name": "猫眼资源",
-    "type": "maccms"
-  },
-  {
-    "api": "https://subocj.com/api.php/provide/vod",
-    "name": "速播资源站",
-    "type": "maccms"
-  },
-  {
     "api": "https://api.guangsuapi.com/api.php/provide/vod",
     "name": "光速资源站",
     "type": "maccms"
