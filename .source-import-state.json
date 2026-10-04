@@ -10,11 +10,11 @@
     },
     "https://api.maoyanapi.top/api.php/provide/vod": {
       "removedAt": "2026-10-03",
-      "onlineStreak": 0
+      "onlineStreak": 1
     },
     "https://subocj.com/api.php/provide/vod": {
       "removedAt": "2026-10-03",
-      "onlineStreak": 0
+      "onlineStreak": 1
     }
   },
   "blocked": {
