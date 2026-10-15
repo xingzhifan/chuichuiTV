@@ -4,10 +4,6 @@
       "removedAt": "2026-09-20",
       "onlineStreak": 2
     },
-    "https://iqiyizyapi.com/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-02"
-    },
     "https://api.maoyanapi.top/api.php/provide/vod": {
       "removedAt": "2026-10-03",
       "onlineStreak": 2
@@ -15,6 +11,10 @@
     "https://subocj.com/api.php/provide/vod": {
       "removedAt": "2026-10-03",
       "onlineStreak": 2
+    },
+    "https://iqiyizyapi.com/api.php/provide/vod": {
+      "onlineStreak": 0,
+      "removedAt": "2026-10-15"
     }
   },
   "blocked": {
