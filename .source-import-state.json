@@ -13,19 +13,19 @@
       "onlineStreak": 2
     },
     "https://iqiyizyapi.com/api.php/provide/vod": {
-      "onlineStreak": 1,
+      "onlineStreak": 2,
       "removedAt": "2026-10-15"
     },
     "https://huyazy.net/api.php/provide/vod": {
-      "onlineStreak": 0,
+      "onlineStreak": 1,
       "removedAt": "2026-10-16"
     },
     "https://api.guangsuapi.com/api.php/provide/vod": {
-      "onlineStreak": 0,
+      "onlineStreak": 1,
       "removedAt": "2026-10-16"
     },
     "https://dbzy.tv/api.php/provide/vod": {
-      "onlineStreak": 0,
+      "onlineStreak": 1,
       "removedAt": "2026-10-16"
     }
   },
