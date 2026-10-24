@@ -12,18 +12,6 @@
       "removedAt": "2026-10-03",
       "onlineStreak": 2
     },
-    "https://huyazy.net/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-16"
-    },
-    "https://api.guangsuapi.com/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-16"
-    },
-    "https://dbzy.tv/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-16"
-    },
     "https://m3u8.apiyhzy.com/api.php/provide/vod": {
       "onlineStreak": 2,
       "removedAt": "2026-10-18"
@@ -35,6 +23,22 @@
     "https://iqiyizyapi.com/api.php/provide/vod": {
       "removedAt": "2026-10-20",
       "onlineStreak": 2
+    },
+    "https://huyazy.net/api.php/provide/vod": {
+      "onlineStreak": 0,
+      "removedAt": "2026-10-24"
+    },
+    "https://jyzyapi.com/provide/vod": {
+      "onlineStreak": 0,
+      "removedAt": "2026-10-24"
+    },
+    "https://api.guangsuapi.com/api.php/provide/vod": {
+      "onlineStreak": 0,
+      "removedAt": "2026-10-24"
+    },
+    "https://dbzy.tv/api.php/provide/vod": {
+      "onlineStreak": 0,
+      "removedAt": "2026-10-24"
     }
   },
   "blocked": {
