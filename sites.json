@@ -137,15 +137,6 @@
     },
     {
       "key": "src16",
-      "name": "爱奇艺资源站",
-      "type": 1,
-      "api": "https://iqiyizyapi.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1
-    },
-    {
-      "key": "src17",
       "name": "速播资源站",
       "type": 1,
       "api": "https://subocj.com/api.php/provide/vod",
@@ -154,7 +145,7 @@
       "filterable": 1
     },
     {
-      "key": "src18",
+      "key": "src17",
       "name": "茅台资源站",
       "type": 1,
       "api": "https://mtzy5.com/api.php/provide/vod",
@@ -163,7 +154,7 @@
       "filterable": 1
     },
     {
-      "key": "src19",
+      "key": "src18",
       "name": "爱坤资源站",
       "type": 1,
       "api": "https://ikunzyapi.com/api.php/provide/vod",
@@ -172,7 +163,7 @@
       "filterable": 1
     },
     {
-      "key": "src20",
+      "key": "src19",
       "name": "采集聚合",
       "type": 1,
       "api": "http://cj.lziapi.com/api.php/provide/vod/",
