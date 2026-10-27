@@ -128,6 +128,24 @@
     },
     {
       "key": "src15",
+      "name": "虎牙资源站",
+      "type": 1,
+      "api": "https://huyazy.net/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "src16",
+      "name": "金鹰资源站",
+      "type": 1,
+      "api": "https://jyzyapi.com/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "src17",
       "name": "猫眼资源",
       "type": 1,
       "api": "https://api.maoyanapi.top/api.php/provide/vod",
@@ -136,7 +154,7 @@
       "filterable": 1
     },
     {
-      "key": "src16",
+      "key": "src18",
       "name": "速播资源站",
       "type": 1,
       "api": "https://subocj.com/api.php/provide/vod",
@@ -145,7 +163,25 @@
       "filterable": 1
     },
     {
-      "key": "src17",
+      "key": "src19",
+      "name": "光速资源站",
+      "type": 1,
+      "api": "https://api.guangsuapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "src20",
+      "name": "豆瓣资源站",
+      "type": 1,
+      "api": "https://dbzy.tv/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "src21",
       "name": "茅台资源站",
       "type": 1,
       "api": "https://mtzy5.com/api.php/provide/vod",
@@ -154,7 +190,7 @@
       "filterable": 1
     },
     {
-      "key": "src18",
+      "key": "src22",
       "name": "爱坤资源站",
       "type": 1,
       "api": "https://ikunzyapi.com/api.php/provide/vod",
@@ -163,7 +199,7 @@
       "filterable": 1
     },
     {
-      "key": "src19",
+      "key": "src23",
       "name": "采集聚合",
       "type": 1,
       "api": "http://cj.lziapi.com/api.php/provide/vod/",
