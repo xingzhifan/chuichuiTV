@@ -32,13 +32,13 @@
       "onlineStreak": 2,
       "removedAt": "2026-10-24"
     },
-    "https://dbzy.tv/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-24"
-    },
     "https://iqiyizyapi.com/api.php/provide/vod": {
       "removedAt": "2026-10-25",
       "onlineStreak": 2
+    },
+    "https://dbzy.tv/api.php/provide/vod": {
+      "removedAt": "2026-11-05",
+      "onlineStreak": 0
     }
   },
   "blocked": {
