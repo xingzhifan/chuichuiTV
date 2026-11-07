@@ -16,10 +16,6 @@
       "onlineStreak": 2,
       "removedAt": "2026-10-18"
     },
-    "https://mtzy5.com/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-18"
-    },
     "https://huyazy.net/api.php/provide/vod": {
       "onlineStreak": 2,
       "removedAt": "2026-10-24"
@@ -38,7 +34,11 @@
     },
     "https://dbzy.tv/api.php/provide/vod": {
       "removedAt": "2026-11-05",
-      "onlineStreak": 1
+      "onlineStreak": 2
+    },
+    "https://mtzy5.com/api.php/provide/vod": {
+      "removedAt": "2026-11-07",
+      "onlineStreak": 0
     }
   },
   "blocked": {
