@@ -39,6 +39,10 @@
     "https://mtzy5.com/api.php/provide/vod": {
       "removedAt": "2026-11-07",
       "onlineStreak": 2
+    },
+    "https://zuidazy.me/api.php/provide/vod": {
+      "removedAt": "2026-11-13",
+      "onlineStreak": 0
     }
   },
   "blocked": {

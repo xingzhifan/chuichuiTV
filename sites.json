@@ -20,15 +20,6 @@
     },
     {
       "key": "src03",
-      "name": "最大资源站",
-      "type": 1,
-      "api": "https://zuidazy.me/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1
-    },
-    {
-      "key": "src04",
       "name": "牛牛资源",
       "type": 1,
       "api": "https://api.niuniuzy.me/api.php/provide/vod",
@@ -37,7 +28,7 @@
       "filterable": 1
     },
     {
-      "key": "src05",
+      "key": "src04",
       "name": "豪华资源站",
       "type": 1,
       "api": "https://haohuazy.com/api.php/provide/vod",
@@ -46,7 +37,7 @@
       "filterable": 1
     },
     {
-      "key": "src06",
+      "key": "src05",
       "name": "360资源",
       "type": 1,
       "api": "https://360zy.com/api.php/provide/vod",
@@ -55,7 +46,7 @@
       "filterable": 1
     },
     {
-      "key": "src07",
+      "key": "src06",
       "name": "红牛资源站",
       "type": 1,
       "api": "https://hongniuzy2.com/api.php/provide/vod",
@@ -64,7 +55,7 @@
       "filterable": 1
     },
     {
-      "key": "src08",
+      "key": "src07",
       "name": "魔都资源",
       "type": 1,
       "api": "https://www.mdzyapi.com/api.php/provide/vod/",
@@ -73,7 +64,7 @@
       "filterable": 1
     },
     {
-      "key": "src09",
+      "key": "src08",
       "name": "鸭鸭资源站",
       "type": 1,
       "api": "https://cj.yayazy.net/api.php/provide/vod",
@@ -82,7 +73,7 @@
       "filterable": 1
     },
     {
-      "key": "src10",
+      "key": "src09",
       "name": "极速资源站",
       "type": 1,
       "api": "https://jszyapi.com/api.php/provide/vod",
@@ -91,7 +82,7 @@
       "filterable": 1
     },
     {
-      "key": "src11",
+      "key": "src10",
       "name": "天涯影视资源",
       "type": 1,
       "api": "https://tyyszyapi.com/api.php/provide/vod",
@@ -100,7 +91,7 @@
       "filterable": 1
     },
     {
-      "key": "src12",
+      "key": "src11",
       "name": "索尼采集站",
       "type": 1,
       "api": "https://suonizy.net/api.php/provide/vod",
@@ -109,7 +100,7 @@
       "filterable": 1
     },
     {
-      "key": "src13",
+      "key": "src12",
       "name": "樱花资源站",
       "type": 1,
       "api": "https://m3u8.apiyhzy.com/api.php/provide/vod",
@@ -118,7 +109,7 @@
       "filterable": 1
     },
     {
-      "key": "src14",
+      "key": "src13",
       "name": "非凡资源站",
       "type": 1,
       "api": "https://ffzy5.tv/api.php/provide/vod",
@@ -127,7 +118,7 @@
       "filterable": 1
     },
     {
-      "key": "src15",
+      "key": "src14",
       "name": "虎牙资源站",
       "type": 1,
       "api": "https://huyazy.net/api.php/provide/vod",
@@ -136,7 +127,7 @@
       "filterable": 1
     },
     {
-      "key": "src16",
+      "key": "src15",
       "name": "金鹰资源站",
       "type": 1,
       "api": "https://jyzyapi.com/provide/vod",
@@ -145,7 +136,7 @@
       "filterable": 1
     },
     {
-      "key": "src17",
+      "key": "src16",
       "name": "猫眼资源",
       "type": 1,
       "api": "https://api.maoyanapi.top/api.php/provide/vod",
@@ -154,7 +145,7 @@
       "filterable": 1
     },
     {
-      "key": "src18",
+      "key": "src17",
       "name": "爱奇艺资源站",
       "type": 1,
       "api": "https://iqiyizyapi.com/api.php/provide/vod",
@@ -163,7 +154,7 @@
       "filterable": 1
     },
     {
-      "key": "src19",
+      "key": "src18",
       "name": "速播资源站",
       "type": 1,
       "api": "https://subocj.com/api.php/provide/vod",
@@ -172,7 +163,7 @@
       "filterable": 1
     },
     {
-      "key": "src20",
+      "key": "src19",
       "name": "光速资源站",
       "type": 1,
       "api": "https://api.guangsuapi.com/api.php/provide/vod",
@@ -181,7 +172,7 @@
       "filterable": 1
     },
     {
-      "key": "src21",
+      "key": "src20",
       "name": "茅台资源站",
       "type": 1,
       "api": "https://mtzy5.com/api.php/provide/vod",
@@ -190,7 +181,7 @@
       "filterable": 1
     },
     {
-      "key": "src22",
+      "key": "src21",
       "name": "爱坤资源站",
       "type": 1,
       "api": "https://ikunzyapi.com/api.php/provide/vod",
@@ -199,7 +190,7 @@
       "filterable": 1
     },
     {
-      "key": "src23",
+      "key": "src22",
       "name": "采集聚合",
       "type": 1,
       "api": "http://cj.lziapi.com/api.php/provide/vod/",
