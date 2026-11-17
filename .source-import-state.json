@@ -4,10 +4,6 @@
       "removedAt": "2026-09-20",
       "onlineStreak": 2
     },
-    "https://api.maoyanapi.top/api.php/provide/vod": {
-      "removedAt": "2026-10-03",
-      "onlineStreak": 2
-    },
     "https://subocj.com/api.php/provide/vod": {
       "removedAt": "2026-10-03",
       "onlineStreak": 2
@@ -28,10 +24,6 @@
       "onlineStreak": 2,
       "removedAt": "2026-10-24"
     },
-    "https://iqiyizyapi.com/api.php/provide/vod": {
-      "removedAt": "2026-10-25",
-      "onlineStreak": 2
-    },
     "https://dbzy.tv/api.php/provide/vod": {
       "removedAt": "2026-11-05",
       "onlineStreak": 2
@@ -43,6 +35,18 @@
     "https://zuidazy.me/api.php/provide/vod": {
       "removedAt": "2026-11-13",
       "onlineStreak": 2
+    },
+    "https://360zy.com/api.php/provide/vod": {
+      "removedAt": "2026-11-17",
+      "onlineStreak": 0
+    },
+    "https://api.maoyanapi.top/api.php/provide/vod": {
+      "removedAt": "2026-11-17",
+      "onlineStreak": 0
+    },
+    "https://iqiyizyapi.com/api.php/provide/vod": {
+      "removedAt": "2026-11-17",
+      "onlineStreak": 0
     }
   },
   "blocked": {
