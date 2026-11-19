@@ -38,15 +38,15 @@
     },
     "https://360zy.com/api.php/provide/vod": {
       "removedAt": "2026-11-17",
-      "onlineStreak": 1
+      "onlineStreak": 2
     },
     "https://api.maoyanapi.top/api.php/provide/vod": {
       "removedAt": "2026-11-17",
-      "onlineStreak": 1
+      "onlineStreak": 2
     },
     "https://iqiyizyapi.com/api.php/provide/vod": {
       "removedAt": "2026-11-17",
-      "onlineStreak": 1
+      "onlineStreak": 2
     }
   },
   "blocked": {
