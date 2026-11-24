@@ -12,10 +12,6 @@
       "onlineStreak": 2,
       "removedAt": "2026-10-18"
     },
-    "https://huyazy.net/api.php/provide/vod": {
-      "onlineStreak": 2,
-      "removedAt": "2026-10-24"
-    },
     "https://jyzyapi.com/provide/vod": {
       "onlineStreak": 2,
       "removedAt": "2026-10-24"
@@ -47,6 +43,10 @@
     "https://iqiyizyapi.com/api.php/provide/vod": {
       "removedAt": "2026-11-17",
       "onlineStreak": 2
+    },
+    "https://huyazy.net/api.php/provide/vod": {
+      "removedAt": "2026-11-24",
+      "onlineStreak": 0
     }
   },
   "blocked": {
